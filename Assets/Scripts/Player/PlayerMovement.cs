@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        Console.log
+        Debug.Log("is FacingRight :" + isFacingRight);
         if (!isFacingRight && horizontal > 0f)
         {
             Flip();
