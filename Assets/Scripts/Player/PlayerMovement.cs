@@ -5,31 +5,41 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float _speed = 8f;
-    [SerializeField]
-    private float jumpingPower = 16f;
-    [SerializeField]
-    private float coyoteTime = 0.5f;
-    [SerializeField]
-    private float jumpBufferTime = 0.5f;
-    [SerializeField]
-    private Rigidbody2D _rigidbody;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float jumpingPower = 16f;
+    [SerializeField] private float coyoteTime = 0.5f;
+    [SerializeField] private float jumpBufferTime = 0.5f;
+    [SerializeField] private Rigidbody2D rigidbody;
+    [SerializeField] private TrailRenderer tr;
+    [SerializeField] public Transform groundCheck;
+    [SerializeField] public LayerMask groundLayer;
 
     private float horizontal;
+    private float vertical;
     private bool isFacingRight = true;
+
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private bool isJumping;
 
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashingPower = 24f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
+
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody = GetComponent<Rigidbody2D>();
     }
     void Update()
     {
+
+        if (isDashing)
+        {
+            return;
+        }
+
         if (IsGrounded())
         {
             coyoteTimeCounter = coyoteTime;
@@ -40,12 +50,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Flip();
-
     }
-
     private void FixedUpdate()
     {
-        _rigidbody.velocity = new Vector2(horizontal * _speed, _rigidbody.velocity.y);
+        if (isDashing)
+        {
+            return;
+        }
+
+        rigidbody.velocity = new Vector2(horizontal * speed, rigidbody.velocity.y);
     }
 
     private bool IsGrounded()
@@ -66,15 +79,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpingPower);
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpingPower);
             jumpBufferCounter = 0f;
 
             StartCoroutine(JumpCooldown());
         }
 
-        if (context.canceled && _rigidbody.velocity.y > 0f)
+        if (context.canceled && rigidbody.velocity.y > 0f)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y * 0.5f);
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
     }
@@ -97,8 +110,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void Dash(InputAction.CallbackContext context)
+    {
+        if (canDash) {
+            StartCoroutine(EnableDash());
+        }
+    }
+
+    private IEnumerator EnableDash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rigidbody.gravityScale;
+        rigidbody.gravityScale = 0f;
+        rigidbody.velocity = new Vector2(transform.localScale.x * dashingPower, transform.localScale.y * vertical * dashingPower);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        rigidbody.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
+    }
+
     public void Move(InputAction.CallbackContext context)
     {
         horizontal = context.ReadValue<Vector2>().x;
+        vertical = context.ReadValue<Vector2>().y;
+        Debug.Log("is horizontal value readed: " + horizontal);
+        Debug.Log("is vertical value readed: " + vertical);
+
     }
 }
