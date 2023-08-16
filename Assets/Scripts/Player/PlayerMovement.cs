@@ -6,10 +6,13 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 8f;
-    [SerializeField] private float jumpingPower = 16f;
+
+    [SerializeField] private float jumpingPower = 28f;
+    [SerializeField] private float doubleJumpingPower = 22f;
     [SerializeField] private float coyoteTime = 0.5f;
     [SerializeField] private float jumpBufferTime = 0.5f;
-    [SerializeField] private Rigidbody2D rigidbody;
+
+    [SerializeField] private new Rigidbody2D rigidbody;
     [SerializeField] private TrailRenderer tr;
     [SerializeField] public Transform groundCheck;
     [SerializeField] public LayerMask groundLayer;
@@ -20,13 +23,13 @@ public class PlayerMovement : MonoBehaviour
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
-    private bool isJumping;
+    private bool doubleJump;
 
     private bool canDash = true;
     private bool isDashing;
-    private float dashingPower = 24f;
+    private float dashingPower = 36f;
     private float dashingTime = 0.2f;
-    private float dashingCooldown = 1f;
+    private float dashingCooldown = 0.7f;
 
     private void Awake()
     {
@@ -34,7 +37,6 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-
         if (isDashing)
         {
             return;
@@ -68,6 +70,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
+        if (IsGrounded())
+        {
+            doubleJump = false;
+        }
         if (context.performed)
         {
             jumpBufferCounter = jumpBufferTime;
@@ -77,12 +83,14 @@ public class PlayerMovement : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
+        if (jumpBufferCounter > 0f)
         {
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpingPower);
-            jumpBufferCounter = 0f;
-
-            StartCoroutine(JumpCooldown());
+            if (coyoteTimeCounter > 0f || doubleJump)
+            {
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
+                jumpBufferCounter = 0f;
+                doubleJump = !doubleJump;
+            }
         }
 
         if (context.canceled && rigidbody.velocity.y > 0f)
@@ -90,13 +98,6 @@ public class PlayerMovement : MonoBehaviour
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
-    }
-
-    private IEnumerator JumpCooldown()
-    {
-        isJumping = true;
-        yield return new WaitForSeconds(0.4f);
-        isJumping = false;
     }
 
     private void Flip()
@@ -122,12 +123,19 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
         float originalGravity = rigidbody.gravityScale;
+
         rigidbody.gravityScale = 0f;
-        rigidbody.velocity = new Vector2(transform.localScale.x * dashingPower, transform.localScale.y * vertical * dashingPower);
+        float horizontalDashPower = transform.localScale.x * horizontal * dashingPower * (isFacingRight ? 1 : -1);
+        float verticalDashPower = transform.localScale.y * vertical * (dashingPower/1.5f);
+
+        rigidbody.velocity = new Vector2(horizontalDashPower, verticalDashPower);
+
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
+
         rigidbody.gravityScale = originalGravity;
+
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
@@ -137,8 +145,7 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontal = context.ReadValue<Vector2>().x;
         vertical = context.ReadValue<Vector2>().y;
-        Debug.Log("is horizontal value readed: " + horizontal);
-        Debug.Log("is vertical value readed: " + vertical);
-
+        //Debug.Log("is horizontal value readed: " + horizontal);
+        //Debug.Log("is vertical value readed: " + vertical);
     }
 }
