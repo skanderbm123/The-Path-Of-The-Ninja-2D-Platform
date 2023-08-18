@@ -221,9 +221,9 @@ public class PlayerMovement : MonoBehaviour
 
         rigidbody.velocity = new Vector2(horizontalDashPower, verticalDashPower);
 
-        tr.emitting = true;
+        trail.emitting = true;
         yield return new WaitForSeconds(dashingTime);
-        tr.emitting = false;
+        trail.emitting = false;
 
         rigidbody.gravityScale = originalGravity;
 
