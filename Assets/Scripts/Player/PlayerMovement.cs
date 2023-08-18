@@ -1,28 +1,35 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement Settings")]
     [SerializeField] private float speed = 12.5f;
-
-    [SerializeField] private float jumpingPower = 28f;
-    [SerializeField] private float doubleJumpingPower = 22f;
-    [SerializeField] private float coyoteTime = 0.5f;
-    [SerializeField] private float jumpBufferTime = 0.5f;
-
     [SerializeField] private new Rigidbody2D rigidbody;
 
-    [SerializeField] private TrailRenderer tr;
-
-    [SerializeField] public Transform groundCheck;
-    [SerializeField] public LayerMask groundLayer;
-
-    [SerializeField] public Transform wallCheck;
-    [SerializeField] public LayerMask wallLayer;
-
+    [Header("Jump Settings")]
     [SerializeField] private InputActionReference jumpAction;
+    private float jumpingPower = 28f;
+    private float doubleJumpingPower = 22f;
+    private float coyoteTime = 0.5f;
+    private float jumpBufferTime = 0.5f;
+
+    [Header("Wall Slide and Jump Settings")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
+    private float wallSlidingSpeed = 2f;
+    private float wallJumpingTime = 0.2f;
+    private float wallJumpingDuration = 0.4f;
+    private Vector2 wallJumpingPower = new Vector2(7f, 21f);
+
+    [Header("Dash Settings")]
+    [SerializeField] private TrailRenderer trail;
+    private float dashingPower = 32f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 0.7f;
 
     private float horizontal;
     private float vertical;
@@ -33,34 +40,24 @@ public class PlayerMovement : MonoBehaviour
     private bool doubleJump;
 
     private bool isWallSliding;
-    private float wallSlidingSpeed = 2f;
-
     private bool isWallJumping;
     private float wallJumpingDirection;
-    private float wallJumpingTime = 0.2f;
     private float wallJumpingCounter;
-    private float wallJumpingDuration = 0.4f;
-    private Vector2 wallJumpingPower = new Vector2(7f, 21f);
 
     private bool canDash = true;
     private bool isDashing;
-    private float dashingPower = 32f;
-    private float dashingTime = 0.2f;
-    private float dashingCooldown = 0.7f;
-
 
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        
     }
-   
+
     private bool JumpInputWasPressed()
     {
         return jumpAction.action.IsPressed();
     }
 
-    void Update()
+    private void Update()
     {
         if (isDashing)
         {
@@ -84,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
             Flip();
         }
     }
+
     private void FixedUpdate()
     {
         if (isDashing)
@@ -111,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallSlide()
     {
-        if ((IsWalled() && !IsGrounded() && horizontal != 0f))
+        if (IsWalled() && !IsGrounded() && horizontal != 0f)
         {
             isWallSliding = true;
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -wallSlidingSpeed, float.MaxValue));
@@ -121,7 +119,6 @@ public class PlayerMovement : MonoBehaviour
             isWallSliding = false;
         }
     }
-
 
     public void Jump(InputAction.CallbackContext context)
     {
@@ -138,8 +135,8 @@ public class PlayerMovement : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        if (jumpBufferCounter > 0f && !isWallSliding) 
-        { 
+        if (jumpBufferCounter > 0f && !isWallSliding)
+        {
             if (coyoteTimeCounter > 0f || doubleJump)
             {
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
@@ -153,8 +150,6 @@ public class PlayerMovement : MonoBehaviour
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
-
-        
     }
 
     private void WallJump()
@@ -174,7 +169,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (JumpInputWasPressed() && wallJumpingCounter > 0f)
         {
-            Debug.Log("here");
             isWallJumping = true;
             rigidbody.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             wallJumpingCounter = 0f;
@@ -198,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Flip()
     {
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
+        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
         {
             Vector3 localScale = transform.localScale;
             isFacingRight = !isFacingRight;
@@ -209,7 +203,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void Dash(InputAction.CallbackContext context)
     {
-        if (canDash) {
+        if (canDash)
+        {
             StartCoroutine(EnableDash());
         }
     }
@@ -222,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
         rigidbody.gravityScale = 0f;
         float horizontalDashPower = transform.localScale.x * horizontal * dashingPower * (isFacingRight ? 1 : -1);
-        float verticalDashPower = transform.localScale.y * vertical * (dashingPower/1.5f);
+        float verticalDashPower = transform.localScale.y * vertical * (dashingPower / 1.5f);
 
         rigidbody.velocity = new Vector2(horizontalDashPower, verticalDashPower);
 
@@ -241,7 +236,5 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontal = context.ReadValue<Vector2>().x;
         vertical = context.ReadValue<Vector2>().y;
-        //Debug.Log("is horizontal value readed: " + horizontal);
-        //Debug.Log("is vertical value readed: " + vertical);
     }
 }
