@@ -33,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
 
     private float horizontal;
     private float vertical;
-    private bool isFacingRight = true;
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
@@ -47,9 +46,12 @@ public class PlayerMovement : MonoBehaviour
     private bool canDash = true;
     private bool isDashing;
 
+    private PlayerFlip playerFlip;
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        playerFlip = GetComponent<PlayerFlip>();
     }
 
     private bool JumpInputWasPressed()
@@ -78,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!isWallJumping)
         {
-            Flip();
+            playerFlip.Flip(horizontal);
         }
     }
 
@@ -175,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (transform.localScale.x != wallJumpingDirection)
             {
-                isFacingRight = !isFacingRight;
+                playerFlip.setIsFacingRight(playerFlip.GetIsFacingRight());
                 Vector3 localScale = transform.localScale;
                 localScale.x *= -1f;
                 transform.localScale = localScale;
@@ -188,17 +190,6 @@ public class PlayerMovement : MonoBehaviour
     private void StopWallJumping()
     {
         isWallJumping = false;
-    }
-
-    private void Flip()
-    {
-        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
-        {
-            Vector3 localScale = transform.localScale;
-            isFacingRight = !isFacingRight;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-        }
     }
 
     public void Dash(InputAction.CallbackContext context)
@@ -216,8 +207,13 @@ public class PlayerMovement : MonoBehaviour
         float originalGravity = rigidbody.gravityScale;
 
         rigidbody.gravityScale = 0f;
-        float horizontalDashPower = transform.localScale.x * horizontal * dashingPower * (isFacingRight ? 1 : -1);
+        float horizontalDashPower = transform.localScale.x * horizontal * dashingPower * (playerFlip.GetIsFacingRight() ? 1 : -1);
         float verticalDashPower = transform.localScale.y * vertical * (dashingPower / 1.5f);
+
+        if (Mathf.Abs(horizontal) < 0.1f && Mathf.Abs(vertical) < 0.1f)
+        {
+            horizontalDashPower = transform.localScale.x * dashingPower * (playerFlip.GetIsFacingRight() ? 1 : -1);
+        }
 
         rigidbody.velocity = new Vector2(horizontalDashPower, verticalDashPower);
 
