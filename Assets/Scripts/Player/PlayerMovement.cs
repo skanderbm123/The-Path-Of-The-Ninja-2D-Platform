@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float speed = 8f;
+    [SerializeField] private float speed = 12.5f;
 
     [SerializeField] private float jumpingPower = 28f;
     [SerializeField] private float doubleJumpingPower = 22f;
@@ -13,9 +13,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpBufferTime = 0.5f;
 
     [SerializeField] private new Rigidbody2D rigidbody;
+
     [SerializeField] private TrailRenderer tr;
+
     [SerializeField] public Transform groundCheck;
     [SerializeField] public LayerMask groundLayer;
+
+    [SerializeField] public Transform wallCheck;
+    [SerializeField] public LayerMask wallLayer;
+
+    [SerializeField] private InputActionReference jumpAction;
 
     private float horizontal;
     private float vertical;
@@ -25,16 +32,34 @@ public class PlayerMovement : MonoBehaviour
     private float jumpBufferCounter;
     private bool doubleJump;
 
+    private bool isWallSliding;
+    private float wallSlidingSpeed = 2f;
+
+    private bool isWallJumping;
+    private float wallJumpingDirection;
+    private float wallJumpingTime = 0.2f;
+    private float wallJumpingCounter;
+    private float wallJumpingDuration = 0.4f;
+    private Vector2 wallJumpingPower = new Vector2(7f, 21f);
+
     private bool canDash = true;
     private bool isDashing;
     private float dashingPower = 32f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 0.7f;
 
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        
     }
+   
+    private bool JumpInputWasPressed()
+    {
+        return jumpAction.action.IsPressed();
+    }
+
     void Update()
     {
         if (isDashing)
@@ -51,13 +76,24 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime;
         }
 
-        Flip();
+        WallSlide();
+        WallJump();
+
+        if (!isWallJumping)
+        {
+            Flip();
+        }
     }
     private void FixedUpdate()
     {
         if (isDashing)
         {
             return;
+        }
+
+        if (!isWallJumping)
+        {
+            rigidbody.velocity = new Vector2(horizontal * speed, rigidbody.velocity.y);
         }
 
         rigidbody.velocity = new Vector2(horizontal * speed, rigidbody.velocity.y);
@@ -67,6 +103,25 @@ public class PlayerMovement : MonoBehaviour
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
+
+    private bool IsWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+    private void WallSlide()
+    {
+        if ((IsWalled() && !IsGrounded() && horizontal != 0f))
+        {
+            isWallSliding = true;
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
 
     public void Jump(InputAction.CallbackContext context)
     {
@@ -83,8 +138,8 @@ public class PlayerMovement : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        if (jumpBufferCounter > 0f)
-        {
+        if (jumpBufferCounter > 0f && !isWallSliding) 
+        { 
             if (coyoteTimeCounter > 0f || doubleJump)
             {
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
@@ -98,6 +153,47 @@ public class PlayerMovement : MonoBehaviour
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
+
+        
+    }
+
+    private void WallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpingDirection = -transform.localScale.x;
+            wallJumpingCounter = wallJumpingTime;
+
+            CancelInvoke(nameof(StopWallJumping));
+        }
+        else
+        {
+            wallJumpingCounter -= Time.deltaTime;
+        }
+
+        if (JumpInputWasPressed() && wallJumpingCounter > 0f)
+        {
+            Debug.Log("here");
+            isWallJumping = true;
+            rigidbody.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            wallJumpingCounter = 0f;
+
+            if (transform.localScale.x != wallJumpingDirection)
+            {
+                isFacingRight = !isFacingRight;
+                Vector3 localScale = transform.localScale;
+                localScale.x *= -1f;
+                transform.localScale = localScale;
+            }
+
+            Invoke(nameof(StopWallJumping), wallJumpingDuration);
+        }
+    }
+
+    private void StopWallJumping()
+    {
+        isWallJumping = false;
     }
 
     private void Flip()
