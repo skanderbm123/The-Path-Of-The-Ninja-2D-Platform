@@ -8,8 +8,8 @@ public class PlayerFlip : MonoBehaviour
     {
         if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
         {
-            Vector3 localScale = transform.localScale;
             isFacingRight = !isFacingRight;
+            Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
         }

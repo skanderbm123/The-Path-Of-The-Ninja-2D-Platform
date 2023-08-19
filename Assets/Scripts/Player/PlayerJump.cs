@@ -6,22 +6,27 @@ using UnityEngine.InputSystem;
 
 public class PlayerJump : MonoBehaviour
 {
-    [Header("Jump Settings")]
+    #region Jump Settings
+
     private InputAction.CallbackContext jumpInput;
     private float jumpingPower = 28f;
     private float doubleJumpingPower = 22f;
     private float coyoteTime = 0.5f;
     private float jumpBufferTime = 0.5f;
 
+    #endregion
+
+    #region Wall Slide and Jump Settings
+
     [Header("Wall Slide and Jump Settings")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private LayerMask wallLayer;
     private float wallSlidingSpeed = 2f;
     private float wallJumpingTime = 0.2f;
     private float wallJumpingDuration = 0.4f;
     private Vector2 wallJumpingPower = new Vector2(22f, 33f);
+
+    #endregion
+
+    #region Private Variables
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
@@ -34,14 +39,18 @@ public class PlayerJump : MonoBehaviour
 
     private PlayerFlip playerFlip;
     private PlayerMovement playerMovement;
+    private PlayerEnvironment playerEnvironment;
 
     [SerializeField] private new Rigidbody2D rigidbody;
+    #endregion
+
 
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
         playerFlip = GetComponent<PlayerFlip>();
         playerMovement = GetComponent<PlayerMovement>();
+        playerEnvironment = GetComponent<PlayerEnvironment>();
     }
 
     public void JumpInput(InputAction.CallbackContext context)
@@ -50,9 +59,7 @@ public class PlayerJump : MonoBehaviour
         Jump(context);
     }
 
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (playerMovement.IsDashing())
         {
@@ -94,12 +101,12 @@ public class PlayerJump : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return playerEnvironment.IsGrounded();
     }
 
     private bool IsWalled()
     {
-        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+        return playerEnvironment.IsWalled();
     }
 
     private void WallSlide()
@@ -117,34 +124,34 @@ public class PlayerJump : MonoBehaviour
 
     private void Jump(InputAction.CallbackContext context)
     {
-            if (IsGrounded())
-            {
-                doubleJump = false;
-            }
-            if (context.performed)
-            {
-                jumpBufferCounter = jumpBufferTime;
-            }
-            else
-            {
-                jumpBufferCounter -= Time.deltaTime;
-            }
+        if (IsGrounded())
+        {
+            doubleJump = false;
+        }
+        if (context.performed)
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
 
-            if (jumpBufferCounter > 0f && !isWallSliding)
+        if (jumpBufferCounter > 0f && !isWallSliding)
+        {
+            if (coyoteTimeCounter > 0f || doubleJump)
             {
-                if (coyoteTimeCounter > 0f || doubleJump)
-                {
-                    rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
-                    jumpBufferCounter = 0f;
-                    doubleJump = !doubleJump;
-                }
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
+                jumpBufferCounter = 0f;
+                doubleJump = !doubleJump;
             }
+        }
 
-            if (context.canceled && rigidbody.velocity.y > 0f)
-            {
-                rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
-                coyoteTimeCounter = 0f;
-            }
+        if (context.canceled && rigidbody.velocity.y > 0f)
+        {
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
+            coyoteTimeCounter = 0f;
+        }
     }
 
     private void WallJump()
@@ -154,7 +161,6 @@ public class PlayerJump : MonoBehaviour
             isWallJumping = false;
             wallJumpingDirection = -transform.localScale.x;
             wallJumpingCounter = wallJumpingTime;
-
             CancelInvoke(nameof(StopWallJumping));
         }
         else
@@ -170,12 +176,11 @@ public class PlayerJump : MonoBehaviour
 
             if (transform.localScale.x != wallJumpingDirection)
             {
-                playerFlip.setIsFacingRight(playerFlip.GetIsFacingRight());
+                playerFlip.setIsFacingRight(!playerFlip.GetIsFacingRight());
                 Vector3 localScale = transform.localScale;
                 localScale.x *= -1f;
                 transform.localScale = localScale;
             }
-
             Invoke(nameof(StopWallJumping), wallJumpingDuration);
         }
     }
