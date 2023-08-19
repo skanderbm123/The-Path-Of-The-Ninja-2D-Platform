@@ -78,13 +78,6 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-
-        if (!playerJump.IsWallJumping())
-        {
-            rigidbody.velocity = new Vector2(horizontal * speed, rigidbody.velocity.y);
-        }
-
-        rigidbody.velocity = new Vector2(horizontal * speed, rigidbody.velocity.y);
     }
 
     private bool IsGrounded()

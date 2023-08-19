@@ -22,7 +22,7 @@ public class PlayerJump : MonoBehaviour
     private float wallSlidingSpeed = 2f;
     private float wallJumpingTime = 0.2f;
     private float wallJumpingDuration = 0.4f;
-    private Vector2 wallJumpingPower = new Vector2(22f, 33f);
+    private Vector2 wallJumpingPower = new Vector2(17f, 22f);
 
     #endregion
 
@@ -40,8 +40,7 @@ public class PlayerJump : MonoBehaviour
     private PlayerFlip playerFlip;
     private PlayerMovement playerMovement;
     private PlayerEnvironment playerEnvironment;
-
-    [SerializeField] private new Rigidbody2D rigidbody;
+    private new Rigidbody2D rigidbody;
     #endregion
 
 
@@ -77,6 +76,7 @@ public class PlayerJump : MonoBehaviour
 
         WallSlide();
         WallJump();
+        WallClimb();
 
         if (!isWallJumping)
         {
@@ -96,7 +96,6 @@ public class PlayerJump : MonoBehaviour
             rigidbody.velocity = new Vector2(playerMovement.GetHorizontal() * playerMovement.GetSpeed(), rigidbody.velocity.y);
         }
 
-        rigidbody.velocity = new Vector2(playerMovement.GetHorizontal() * playerMovement.GetSpeed(), rigidbody.velocity.y);
     }
 
     private bool IsGrounded()
@@ -182,6 +181,18 @@ public class PlayerJump : MonoBehaviour
                 transform.localScale = localScale;
             }
             Invoke(nameof(StopWallJumping), wallJumpingDuration);
+        }
+    }
+
+    private void WallClimb()
+    {
+        if (IsWalled() && !IsGrounded() && playerMovement.GetVertical() != 0f)
+        {
+            rigidbody.velocity = new Vector2(0, playerMovement.GetVertical() * 20f);
+        }
+        else
+        {
+            isWallSliding = false;
         }
     }
 

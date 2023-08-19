@@ -1146,7 +1146,7 @@ PrefabInstance:
       objectReference: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
     - target: {fileID: 6659565721487353475, guid: 35a672a3c71ec7946bb2606d5819a707, type: 3}
       propertyPath: m_PreviewTimeScale
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6752611779263538059, guid: 35a672a3c71ec7946bb2606d5819a707, type: 3}
       propertyPath: m_Icon
@@ -1158,10 +1158,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4240443461563172452, guid: 35a672a3c71ec7946bb2606d5819a707, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1367664162}
+      addedObject: {fileID: 1367664168}
     - targetCorrespondingSourceObject: {fileID: 4240443461563172452, guid: 35a672a3c71ec7946bb2606d5819a707, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1367664168}
+      addedObject: {fileID: 1367664162}
     - targetCorrespondingSourceObject: {fileID: 4240443461563172452, guid: 35a672a3c71ec7946bb2606d5819a707, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1367664175}
