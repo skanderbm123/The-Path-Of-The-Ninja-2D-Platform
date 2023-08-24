@@ -3,26 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class PlayerJump : MonoBehaviour
 {
+
+
     #region Jump Settings
 
     private InputAction.CallbackContext jumpInput;
-    private float jumpingPower = 28f;
-    private float doubleJumpingPower = 22f;
-    private float coyoteTime = 0.5f;
-    private float jumpBufferTime = 0.5f;
-
-    #endregion
-
-    #region Wall Slide and Jump Settings
-
-    [Header("Wall Slide and Jump Settings")]
-    private float wallSlidingSpeed = 2f;
-    private float wallJumpingTime = 0.2f;
-    private float wallJumpingDuration = 0.4f;
-    private Vector2 wallJumpingPower = new Vector2(17f, 22f);
 
     #endregion
 
@@ -30,13 +19,14 @@ public class PlayerJump : MonoBehaviour
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
-    private bool doubleJump;
-
-    private bool isWallSliding;
-    private bool isWallJumping;
-    private float wallJumpingDirection;
     private float wallJumpingCounter;
 
+    private bool doubleJump;
+    private bool isWallSliding;
+
+    private float wallJumpingDirection;
+
+    public PlayerData Data;
     private PlayerFlip playerFlip;
     private PlayerMovement playerMovement;
     private PlayerEnvironment playerEnvironment;
@@ -60,14 +50,14 @@ public class PlayerJump : MonoBehaviour
 
     private void Update()
     {
-        if (playerMovement.IsDashing())
+        if (Data.isDashing)
         {
             return;
         }
 
         if (IsGrounded())
         {
-            coyoteTimeCounter = coyoteTime;
+            coyoteTimeCounter = Data.coyoteTime;
         }
         else
         {
@@ -75,27 +65,7 @@ public class PlayerJump : MonoBehaviour
         }
 
         WallSlide();
-        WallJump();
-        WallClimb();
-
-        if (!isWallJumping)
-        {
-            playerFlip.Flip(playerMovement.GetHorizontal());
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (playerMovement.IsDashing())
-        {
-            return;
-        }
-
-        if (!isWallJumping)
-        {
-            rigidbody.velocity = new Vector2(playerMovement.GetHorizontal() * playerMovement.GetSpeed(), rigidbody.velocity.y);
-        }
-
+        //WallClimb();
     }
 
     private bool IsGrounded()
@@ -113,7 +83,7 @@ public class PlayerJump : MonoBehaviour
         if (IsWalled() && !IsGrounded() && playerMovement.GetHorizontal() != 0f)
         {
             isWallSliding = true;
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -Data.slideSpeed, float.MaxValue));
         }
         else
         {
@@ -123,13 +93,18 @@ public class PlayerJump : MonoBehaviour
 
     private void Jump(InputAction.CallbackContext context)
     {
+        if (isWallSliding)
+        {
+            WallJump();
+        }
+
         if (IsGrounded())
         {
             doubleJump = false;
         }
         if (context.performed)
         {
-            jumpBufferCounter = jumpBufferTime;
+            jumpBufferCounter = Data.jumpInputBufferTime;
         }
         else
         {
@@ -140,12 +115,11 @@ public class PlayerJump : MonoBehaviour
         {
             if (coyoteTimeCounter > 0f || doubleJump)
             {
-                rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? doubleJumpingPower : jumpingPower);
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, doubleJump ? Data.doublejumpHeight : Data.jumpHeight);
                 jumpBufferCounter = 0f;
                 doubleJump = !doubleJump;
             }
         }
-
         if (context.canceled && rigidbody.velocity.y > 0f)
         {
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
@@ -157,9 +131,9 @@ public class PlayerJump : MonoBehaviour
     {
         if (isWallSliding)
         {
-            isWallJumping = false;
+            Data.isWallJumping = false;
             wallJumpingDirection = -transform.localScale.x;
-            wallJumpingCounter = wallJumpingTime;
+            wallJumpingCounter = Data.wallJumpTime;
             CancelInvoke(nameof(StopWallJumping));
         }
         else
@@ -169,8 +143,8 @@ public class PlayerJump : MonoBehaviour
 
         if (jumpInput.performed && wallJumpingCounter > 0f)
         {
-            isWallJumping = true;
-            rigidbody.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            Data.isWallJumping = true;
+            rigidbody.velocity = new Vector2(wallJumpingDirection * Data.wallJumpForce.x, Data.wallJumpForce.y);
             wallJumpingCounter = 0f;
 
             if (transform.localScale.x != wallJumpingDirection)
@@ -180,7 +154,7 @@ public class PlayerJump : MonoBehaviour
                 localScale.x *= -1f;
                 transform.localScale = localScale;
             }
-            Invoke(nameof(StopWallJumping), wallJumpingDuration);
+            Invoke(nameof(StopWallJumping), Data.wallJumpRunLerp);
         }
     }
 
@@ -188,21 +162,18 @@ public class PlayerJump : MonoBehaviour
     {
         if (IsWalled() && !IsGrounded() && playerMovement.GetVertical() != 0f)
         {
+            // add value for wall climb
             rigidbody.velocity = new Vector2(0, playerMovement.GetVertical() * 20f);
-        }
-        else
-        {
-            isWallSliding = false;
         }
     }
 
     private void StopWallJumping()
     {
-        isWallJumping = false;
+        Data.isWallJumping = false;
     }
 
     internal bool IsWallJumping()
     {
-        return isWallJumping;
+        return Data.isWallJumping;
     }
 }
