@@ -57,16 +57,15 @@ public class PlayerJump : MonoBehaviour
     {
         if (!isWallSliding)
         {
-            if (Data.isJumping || jumpAvailables > 0)
+            if (Data.isJumping)
             {
-                rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpAvailables == Data.extraJumps ? Data.jumpHeight : (Data.jumpHeight * 1.2f));
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, Data.jumpHeight);
 
                 float force = Data.jumpForce;
                 if (rigidbody.velocity.y < 0)
                     force -= rigidbody.velocity.y;
 
                 rigidbody.AddForce(Vector2.up * force, ForceMode2D.Impulse);
-                --jumpAvailables;
             }
         }
     }
