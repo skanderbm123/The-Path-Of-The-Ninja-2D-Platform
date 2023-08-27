@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void RunChecks()
     {
-        if (!Data.isWallJumping && !Data.isJumping)
+        if (!Data.isWallJumping && IsGrounded())
         {
             playerFlip.Flip(horizontal);
         }
@@ -59,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
         {
             Run(Data.dashEndRunLerp);
         }*/
-
     }
 
     #region RUN
@@ -83,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region Add Bonus Jump Apex Acceleration
-        if ((!playerEnvironment.IsGrounded() || Data.isWallJumping || playerJump.isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
+        if ((!playerEnvironment.IsGrounded() || Data.isWallJumping || Data.isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
         {
             accelRate *= Data.jumpHangAccelerationMult;
             targetSpeed *= Data.jumpHangMaxSpeedMult;

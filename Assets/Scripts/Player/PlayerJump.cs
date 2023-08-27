@@ -5,14 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerJump : MonoBehaviour
 {
     public bool isWallSliding { get; set; }
-    public bool isJumpFalling { get; set; }
     public bool isJumpCut { get; set; }
     public float wallJumpingDirection { get; set; }
+    public float _wallJumpFreezeTime { get; set; }
+    public int _lastWallJumpDir { get; set; }
 
     #region Jump Settings
-
     public InputActionReference jump;
-   
     #endregion
 
     #region Timers
@@ -27,8 +26,6 @@ public class PlayerJump : MonoBehaviour
     private PlayerMovement playerMovement;
     private PlayerEnvironment playerEnvironment;
     private new Rigidbody2D rigidbody;
-    private float _wallJumpFreezeTime;
-    private int _lastWallJumpDir;
     #endregion
 
     private void Awake()
@@ -72,62 +69,66 @@ public class PlayerJump : MonoBehaviour
 
     private void JumpChecks()
     {
-        if (Data.isJumping && rigidbody.velocity.y < 0) // add check aussi pour double jump
+        if (Data.isJumping && rigidbody.velocity.y < 0)
         {
-            //Data.isJumping = false; this bcomes false then
+            Data.isJumping = false;
 
             if (!Data.isWallJumping)
-                isJumpFalling = true;
-
+                Data.isJumpFalling = true;
         }
+
 
         if (Data.isWallJumping && (Time.time - _wallJumpFreezeTime > Data.wallJumpFreezeTime))
         {
             Data.isWallJumping = false;
         }
 
-        if (IsGrounded() && !Data.isJumping && !Data.isWallJumping)
+        if (!IsGrounded() && !Data.isJumping && !Data.isWallJumping)
         {
             isJumpCut = false;
-            
+
             if (!Data.isJumping)
-                isJumpFalling = false; // a voir il va ou
+                Data.isJumpFalling = false;
         }
 
-       
-            //Debug.Log(jumpAvailables);
-            //Jump
-            if (isWallSliding)
-            {
-                Data.isWallJumping = true;
-                Data.isJumping = false;
-                isJumpCut = false;
-                isJumpFalling = false; // a voir il va ou
 
-                _wallJumpFreezeTime = Time.time;
-                WallJump();
-            }
-            else if (jump.action.WasPressedThisFrame() && ((IsGrounded() && !Data.isJumping) || jumpBufferCounter > 0 || coyoteTimeCounter > 0))
+        //Jump
+        if (isWallSliding)
+        {
+            Data.isWallJumping = true;
+            Data.isJumping = false;
+            isJumpCut = false;
+            Data.isJumpFalling = false;
+            _wallJumpFreezeTime = Time.time;
+            WallJump();
+        }
+        else if (jump.action.WasPerformedThisFrame())
+        {
+            if (IsGrounded() || coyoteTimeCounter > 0)
             {
-                jumpBufferCounter = 0f;
                 coyoteTimeCounter = 0f;
                 Data.isJumping = true;
                 Data.isWallJumping = false;
                 isJumpCut = false;
-                isJumpFalling = false;
+                Data.isJumpFalling = false;
                 Jump();
-            } 
-            else if (jump.action.WasReleasedThisFrame())
-            {
-                jumpBufferCounter = 0f;
-                coyoteTimeCounter = 0f;
-                Data.isJumping = true;
-                Data.isWallJumping = false;
-                isJumpCut = true;
-                isJumpFalling = false; // a voir il va ou
-                JumpCut();
             }
-        
+            else
+            {
+                // Buffer the jump input
+                jumpBufferCounter = Data.jumpInputBufferTime;
+            }
+        }
+        else if (jump.action.WasReleasedThisFrame())
+        {
+            jumpBufferCounter = 0f;
+            coyoteTimeCounter = 0f;
+            Data.isJumping = true;
+            Data.isWallJumping = false;
+            isJumpCut = true;
+            Data.isJumpFalling = false; // a voir il va ou
+            JumpCut();
+        }
     }
 
     private void JumpCut()
@@ -152,7 +153,7 @@ public class PlayerJump : MonoBehaviour
                 SetGravityScale(Data.gravityScale * Data.jumpCutGravityMult);
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Max(rigidbody.velocity.y, -Data.maxFallSpeed));
             }
-            else if ((Data.isJumping || Data.isWallJumping || isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
+            else if ((Data.isJumping || Data.isWallJumping || Data.isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
             {
                 SetGravityScale(Data.gravityScale * Data.jumpHangGravityMult);
             }
@@ -244,7 +245,7 @@ public class PlayerJump : MonoBehaviour
             Data.isWallJumping = false;
             isJumpCut = false;
             isWallSliding = false;
-            jumpBufferCounter = Data.jumpInputBufferTime;
+            jumpBufferCounter = Data.jumpInputBufferTime; // Reset jump buffer counter
             coyoteTimeCounter = Data.coyoteTime;
             return;
         }

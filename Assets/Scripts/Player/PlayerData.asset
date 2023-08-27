@@ -27,9 +27,9 @@ MonoBehaviour:
   deccelInAir: 0.06905068
   doConserveMomentum: 1
   jumpHeight: 4.19
-  extraJumps: 1
   jumpTimeToApex: 0.32
   isJumping: 0
+  isJumpFalling: 0
   jumpForce: 26.187502
   jumpCutGravityMult: 1.02
   jumpHangGravityMult: 0.768
@@ -51,7 +51,7 @@ MonoBehaviour:
   canDash: 1
   isDashing: 0
   dashAttackTime: 0.2
-  dashEndTime: 0.06
+  dashEndTime: 0.16
   dashEndSpeed: {x: 15, y: 15}
   dashEndRunLerp: 0
   dashRefillTime: 0.5
