@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Player Data")] //Create a new playerData object by right clicking in the Project Menu then Create/Player/Player Data and drag onto the player
+[CreateAssetMenu(menuName = "Player Data")]
 public class PlayerData : ScriptableObject
 {
     [Header("Gravity")]
@@ -33,8 +33,8 @@ public class PlayerData : ScriptableObject
 
     [Header("Jump")]
     public float jumpHeight; //Height of the player's jump
-    public float doublejumpHeight;
     public float jumpTimeToApex; //Time between applying the jump force and reaching the desired jump height. These values also control the player's gravity and jump force.
+    [HideInInspector] public bool isJumping;
     [HideInInspector] public float jumpForce; //The actual force applied (upwards) to the player when they jump.
 
     [Header("Both Jumps")]
@@ -49,9 +49,9 @@ public class PlayerData : ScriptableObject
     public Vector2 wallJumpForce; //The actual force (this time set by us) applied to the player when wall jumping.
     [Space(5)]
     [Range(0f, 1f)] public float wallJumpRunLerp; //Reduces the effect of player's movement while wall jumping.
-    [Range(0f, 1.5f)] public float wallJumpTime; //Time after wall jumping the player's movement is slowed for.
+    [Range(0f, 1.5f)] public float wallJumpFreezeTime; //Time after wall jumping the player's movement is slowed for.
     public bool doTurnOnWallJump; //Player will rotate to face wall jumping direction
-    public bool isWallJumping;
+    [HideInInspector] public bool isWallJumping;
 
     [Space(20)]
 
@@ -70,7 +70,7 @@ public class PlayerData : ScriptableObject
     public float dashSpeed;
     public float dashSleepTime; //Duration for which the game freezes when we press dash but before we read directional input and apply a force
     public bool canDash = true;
-    public bool isDashing;
+    [HideInInspector] public bool isDashing;
     [Space(5)]
     public float dashAttackTime;
     [Space(5)]
@@ -98,7 +98,7 @@ public class PlayerData : ScriptableObject
 
         //Calculate jumpForce using the formula (initialJumpVelocity = gravity * timeToJumpApex)
         jumpForce = Mathf.Abs(gravityStrength) * jumpTimeToApex;
-
+        
         #region Variable Ranges
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
         runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);

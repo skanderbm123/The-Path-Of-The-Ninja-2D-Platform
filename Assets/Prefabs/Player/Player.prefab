@@ -199,19 +199,7 @@ MonoBehaviour:
     m_ActionId: c7e950d6-7aeb-4983-832a-aea4cde195e0
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1506094291128086824}
-        m_TargetAssemblyTypeName: PlayerJump, Assembly-CSharp
-        m_MethodName: JumpInput
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 8f9fecee-1b97-42be-9660-a7bc20d0e167
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
@@ -436,6 +424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3423dd2b08587ba4aacca0a90c15da89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jump: {fileID: 4103479114090377608, guid: 771f1e6bd962304469384348603b8b35, type: 3}
   Data: {fileID: 11400000, guid: c8c44ca0d320b9b46a74dea02219a0d5, type: 2}
 --- !u!114 &9122975276358083800
 MonoBehaviour:

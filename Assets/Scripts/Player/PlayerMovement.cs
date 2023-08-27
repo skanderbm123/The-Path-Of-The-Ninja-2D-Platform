@@ -5,30 +5,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region COMPONENTS
     public PlayerData Data;
-    private PlayerJump playerJump;
     private PlayerFlip playerFlip;
+    private PlayerJump playerJump;
     private PlayerEnvironment playerEnvironment;
     private new Rigidbody2D rigidbody;
+    #endregion
+
+    #region Timers
+    private float dashTimeCounter;
+    #endregion
 
     [SerializeField] private TrailRenderer trail;
 
-    private float horizontal;
-    private float vertical;
-
-    #region Getters and Setters
-
-    internal float GetHorizontal()
-    {
-        return horizontal;
-    }
-
-    internal float GetVertical()
-    {
-        return vertical;
-    }
-
-    #endregion
+    public float horizontal { get; set; }
+    public float vertical { get; set; }
 
     private void Awake()
     {
@@ -40,33 +32,80 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (Data.isDashing)
-        {
-            return;
-        }   
+        DashChecks();
 
-        if (IsGrounded() && Data.dashRefillTime < 0f)
-        {
-            Data.canDash = true;
-        } else 
-        {
-            Data.dashRefillTime -= Time.deltaTime;
-        }
-
-        if (!Data.isWallJumping)
-        {
-            playerFlip.Flip(horizontal);
-        }
-
-
-        if (Data.canDash)
-        {
-            GetComponent<SpriteRenderer>().color = Color.yellow;
-        }
     }
 
     private void FixedUpdate()
     {
+        RunChecks();
+    }
+
+    private void RunChecks()
+    {
+        if (!Data.isWallJumping && !Data.isJumping)
+        {
+            playerFlip.Flip(horizontal);
+        }
+
+        if (!Data.isDashing)
+        {
+            if (!Data.isWallJumping)
+            {
+                Run(1);
+            }
+        }
+       /* else if (_isDashAttacking)
+        {
+            Run(Data.dashEndRunLerp);
+        }*/
+
+    }
+
+    #region RUN
+    public void Move(InputAction.CallbackContext context)
+    {
+        horizontal = context.ReadValue<Vector2>().x;
+        vertical = context.ReadValue<Vector2>().y;
+    }
+
+    private void Run(float lerpAmount)
+    {
+        float targetSpeed = horizontal * Data.runMaxSpeed;
+        targetSpeed = Mathf.Lerp(rigidbody.velocity.x, targetSpeed, lerpAmount);
+
+        #region Calculate AccelRate
+        float accelRate;
+        if (playerEnvironment.IsGrounded()) 
+            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
+        else 
+            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount * Data.accelInAir : Data.runDeccelAmount * Data.deccelInAir;
+        #endregion
+
+        #region Add Bonus Jump Apex Acceleration
+        if ((!playerEnvironment.IsGrounded() || Data.isWallJumping || playerJump.isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
+        {
+            accelRate *= Data.jumpHangAccelerationMult;
+            targetSpeed *= Data.jumpHangMaxSpeedMult;
+        }
+        #endregion
+
+        #region Conserve Momentum
+        if (Data.doConserveMomentum && Mathf.Abs(rigidbody.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigidbody.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f ) // && LastOnGroundTime < 0)
+        {
+            accelRate = 0;
+        }
+        #endregion
+
+        float speedDif = targetSpeed - rigidbody.velocity.x;
+        float movement = speedDif * accelRate;
+        rigidbody.AddForce(movement * Vector2.right, ForceMode2D.Force);
+    }
+    #endregion
+
+    #region DASH
+    private void DashChecks()
+    {
         if (Data.isDashing)
         {
             return;
@@ -74,114 +113,84 @@ public class PlayerMovement : MonoBehaviour
 
         if (Data.canDash)
         {
-            GetComponent<Renderer>().material.color = new Color(0, 1, 1);
+            GetComponent<SpriteRenderer>().color = Color.red;
         }
 
-
-        if (!Data.isWallJumping)
+        if (dashTimeCounter < 0f)
         {
-            Run(1);
+            Data.canDash = true;
+        }
+        else
+        {
+            dashTimeCounter -= Time.deltaTime;
         }
     }
-
-    private void Run(float lerpAmount)
-    {
-        //Calculate the direction we want to move in and our desired velocity
-        float targetSpeed = horizontal * Data.runMaxSpeed;
-        //We can reduce are control using Lerp() this smooths changes to are direction and speed
-        targetSpeed = Mathf.Lerp(rigidbody.velocity.x, targetSpeed, lerpAmount);
-
-        #region Calculate AccelRate
-        float accelRate;
-
-        //Gets an acceleration value based on if we are accelerating (includes turning) 
-        //or trying to decelerate (stop). As well as applying a multiplier if we're air borne.
-        /*if (LastOnGroundTime > 0)
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
-        else*/
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount * Data.accelInAir : Data.runDeccelAmount * Data.deccelInAir;
-        #endregion
-
-        #region Add Bonus Jump Apex Acceleration
-        //Increase are acceleration and maxSpeed when at the apex of their jump, makes the jump feel a bit more bouncy, responsive and natural
-   /*     if ((IsJumping || IsWallJumping || _isJumpFalling) && Mathf.Abs(rigidbody.velocity.y) < Data.jumpHangTimeThreshold)
-        {
-            accelRate *= Data.jumpHangAccelerationMult;
-            targetSpeed *= Data.jumpHangMaxSpeedMult;
-        }*/
-        #endregion
-
-        #region Conserve Momentum
-        //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
-        if (Data.doConserveMomentum && Mathf.Abs(rigidbody.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigidbody.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f ) // && LastOnGroundTime < 0)
-        {
-            //Prevent any deceleration from happening, or in other words conserve are current momentum
-            //You could experiment with allowing for the player to slightly increae their speed whilst in this "state"
-            accelRate = 0;
-        }
-        #endregion
-
-        //Calculate difference between current velocity and desired velocity
-        float speedDif = targetSpeed - rigidbody.velocity.x;
-        //Calculate force along x-axis to apply to thr player
-
-        float movement = speedDif * accelRate;
-
-        //Convert this to a vector and apply to rigidbody
-        rigidbody.AddForce(movement * Vector2.right, ForceMode2D.Force);
-
-        /*
-		 * For those interested here is what AddForce() will do
-		 * RB.velocity = new Vector2(RB.velocity.x + (Time.fixedDeltaTime  * speedDif * accelRate) / RB.mass, RB.velocity.y);
-		 * Time.fixedDeltaTime is by default in Unity 0.02 seconds equal to 50 FixedUpdate() calls per second
-		*/
-    }
-
-    private bool IsGrounded()
-    {
-        return playerEnvironment.IsGrounded();
-    }
-
 
     public void Dash(InputAction.CallbackContext context)
     {
         if (Data.canDash)
         {
-            StartCoroutine(EnableDash());
+            Sleep(Data.dashSleepTime);
+            Vector2 moveInput = new Vector2(horizontal, vertical);
+            Vector2 dirDash;
+            if (moveInput != Vector2.zero)
+                dirDash = moveInput;
+            else
+                dirDash = playerFlip.GetIsFacingRight() ? Vector2.right : Vector2.left;
+
+            StartCoroutine(nameof(EnableDash), dirDash);
         }
     }
 
-    private IEnumerator EnableDash()
+    private IEnumerator EnableDash(Vector2 dirDash)
     {
         Data.canDash = false;
         Data.isDashing = true;
-        Data.dashRefillTime = Data.dashSleepTime;
-        float originalGravity = rigidbody.gravityScale;
 
-        rigidbody.gravityScale = 0f;
-
-        float horizontalDashPower = transform.localScale.x * Mathf.Abs(horizontal) * Data.dashAmount;
-        float verticalDashPower = transform.localScale.y * vertical * (Data.dashAmount / 1.5f);
-
-        if (Mathf.Abs(horizontal) < 0.1f && Mathf.Abs(vertical) < 0.1f)
+        SetGravityScale(0);
+        float startTime = Time.time;
+        trail.emitting = true;
+        while (Time.time - startTime <= Data.dashAttackTime)
         {
-            horizontalDashPower = transform.localScale.x * Data.dashAmount;
+            rigidbody.velocity = dirDash.normalized * Data.dashSpeed;
+            yield return null;
         }
 
-        rigidbody.velocity = new Vector2(horizontalDashPower, verticalDashPower);
-        GetComponent<SpriteRenderer>().color = Color.cyan;
-        trail.emitting = true;
-        yield return new WaitForSeconds(Data.dashAttackTime);
+        startTime = Time.time;
+
+        SetGravityScale(Data.gravityScale);
+        rigidbody.velocity = Data.dashEndSpeed * dirDash.normalized;
+
+        while (Time.time - startTime <= Data.dashEndTime)
+        {
+            yield return null;
+        }
         trail.emitting = false;
-
-        rigidbody.gravityScale = originalGravity;
-
+        GetComponent<SpriteRenderer>().color = Color.cyan;
+        dashTimeCounter = Data.dashRefillTime;
         Data.isDashing = false;
     }
+    #endregion
 
-    public void Move(InputAction.CallbackContext context)
+    public void SetGravityScale(float scale)
     {
-         horizontal = context.ReadValue<Vector2>().x;
-         vertical = context.ReadValue<Vector2>().y;
+        rigidbody.gravityScale = scale;
+    }
+
+    private void Sleep(float duration)
+    {
+        StartCoroutine(nameof(PerformSleep), duration);
+    }
+
+    private IEnumerator PerformSleep(float duration)
+    {
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1;
+    }
+
+    private bool IsGrounded()
+    {
+        return playerEnvironment.IsGrounded();
     }
 }
