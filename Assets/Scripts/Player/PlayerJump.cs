@@ -6,10 +6,10 @@ public class PlayerJump : MonoBehaviour
 {
     public bool isWallSliding { get; set; }
     public bool isJumpCut { get; set; }
+    public bool canDoubleJump { get; set; }
     public float wallJumpingDirection { get; set; }
     public float _wallJumpFreezeTime { get; set; }
     public int _lastWallJumpDir { get; set; }
-
     #region Jump Settings
     public InputActionReference jump;
     #endregion
@@ -104,13 +104,15 @@ public class PlayerJump : MonoBehaviour
         }
         else if (jump.action.WasPerformedThisFrame())
         {
-            if (IsGrounded() || coyoteTimeCounter > 0)
+            if (IsGrounded() || coyoteTimeCounter > 0 || canDoubleJump) // Add canDoubleJump condition
             {
                 coyoteTimeCounter = 0f;
                 Data.isJumping = true;
                 Data.isWallJumping = false;
                 isJumpCut = false;
                 Data.isJumpFalling = false;
+                canDoubleJump = false; // Reset double jump after any jump
+
                 Jump();
             }
             else
@@ -247,6 +249,10 @@ public class PlayerJump : MonoBehaviour
             isWallSliding = false;
             jumpBufferCounter = Data.jumpInputBufferTime; // Reset jump buffer counter
             coyoteTimeCounter = Data.coyoteTime;
+
+            // Reset double jump
+            canDoubleJump = true;
+
             return;
         }
 
