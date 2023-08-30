@@ -40,7 +40,7 @@ public class PlayerJump : MonoBehaviour
     {
         StartWallSliding();
         JumpChecks();
-
+        
     }
 
     private void FixedUpdate()
@@ -95,8 +95,9 @@ public class PlayerJump : MonoBehaviour
                 Data.isJumpFalling = false;
         }
 
-
         //Jump
+
+
         if (isWallSliding)
         {
             Data.isWallJumping = true;
@@ -105,17 +106,27 @@ public class PlayerJump : MonoBehaviour
             Data.isJumpFalling = false;
             _wallJumpFreezeTime = Time.time;
             WallJump();
+        } 
+        else if (IsGrounded() && jumpBufferCounter > 0f)
+        {
+            coyoteTimeCounter = 0f;
+            Data.isJumping = true;
+            Data.isWallJumping = false;
+            Data.isJumpFalling = false;
+            if (isJumpCut)
+                JumpCut();
+            else
+                Jump();
         }
         else if (jump.action.WasPerformedThisFrame())
         {
-            if (IsGrounded() || coyoteTimeCounter > 0 || canDoubleJump) // Add canDoubleJump condition
+            if (IsGrounded() || coyoteTimeCounter > 0 )//|| canDoubleJump)
             {
                 coyoteTimeCounter = 0f;
                 Data.isJumping = true;
                 Data.isWallJumping = false;
                 isJumpCut = false;
                 Data.isJumpFalling = false;
-                canDoubleJump = false; // Reset double jump after any jump
 
                 Jump();
             }
@@ -127,12 +138,11 @@ public class PlayerJump : MonoBehaviour
         }
         else if (jump.action.WasReleasedThisFrame())
         {
-            jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
             Data.isJumping = true;
             Data.isWallJumping = false;
             isJumpCut = true;
-            Data.isJumpFalling = false; // a voir il va ou
+            Data.isJumpFalling = false;
             JumpCut();
         }
     }
@@ -291,7 +301,6 @@ public class PlayerJump : MonoBehaviour
             Data.isWallJumping = false;
             isJumpCut = false;
             isWallSliding = false;
-            jumpBufferCounter = Data.jumpInputBufferTime; // Reset jump buffer counter
             coyoteTimeCounter = Data.coyoteTime;
 
             // Reset double jump
