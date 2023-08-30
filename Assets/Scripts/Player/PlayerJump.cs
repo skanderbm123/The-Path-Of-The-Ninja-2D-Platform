@@ -40,7 +40,7 @@ public class PlayerJump : MonoBehaviour
     {
         StartWallSliding();
         JumpChecks();
-        
+
     }
 
     private void FixedUpdate()
@@ -81,7 +81,6 @@ public class PlayerJump : MonoBehaviour
                 Data.isJumpFalling = true;
         }
 
-
         if (Data.isWallJumping && (Time.time - _wallJumpFreezeTime > Data.wallJumpFreezeTime))
         {
             Data.isWallJumping = false;
@@ -95,9 +94,7 @@ public class PlayerJump : MonoBehaviour
                 Data.isJumpFalling = false;
         }
 
-        //Jump
-
-
+        // Jump
         if (isWallSliding)
         {
             Data.isWallJumping = true;
@@ -106,7 +103,7 @@ public class PlayerJump : MonoBehaviour
             Data.isJumpFalling = false;
             _wallJumpFreezeTime = Time.time;
             WallJump();
-        } 
+        }
         else if (IsGrounded() && jumpBufferCounter > 0f)
         {
             coyoteTimeCounter = 0f;
@@ -117,18 +114,30 @@ public class PlayerJump : MonoBehaviour
                 JumpCut();
             else
                 Jump();
+
+            // Reset double jump after a regular jump
+            canDoubleJump = true;
         }
         else if (jump.action.WasPerformedThisFrame())
         {
-            if (IsGrounded() || coyoteTimeCounter > 0 )//|| canDoubleJump)
+            if (IsGrounded() || coyoteTimeCounter > 0f || canDoubleJump)
             {
-                coyoteTimeCounter = 0f;
                 Data.isJumping = true;
                 Data.isWallJumping = false;
                 isJumpCut = false;
                 Data.isJumpFalling = false;
 
-                Jump();
+                if (!IsGrounded() && canDoubleJump && coyoteTimeCounter < 0f)
+                {
+                    canDoubleJump = false;
+                    // Perform double jump here
+                    Jump();
+                }
+                else
+                {
+                    coyoteTimeCounter = 0f;
+                    Jump();
+                }
             }
             else
             {
