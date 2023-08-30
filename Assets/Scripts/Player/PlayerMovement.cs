@@ -34,6 +34,21 @@ public class PlayerMovement : MonoBehaviour
     {
         DashChecks();
 
+        if (!Data.canDash)
+        {
+            GetComponent<SpriteRenderer>().color = Color.cyan;
+        }
+        else
+        {
+            if (playerFlip.GetIsFacingRight())
+            {
+                GetComponent<SpriteRenderer>().color = Color.red;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().color = Color.green;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -165,7 +180,6 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
         trail.emitting = false;
-        GetComponent<SpriteRenderer>().color = Color.cyan;
         dashTimeCounter = Data.dashRefillTime;
         Data.isDashing = false;
     }

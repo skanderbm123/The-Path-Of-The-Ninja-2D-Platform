@@ -41,8 +41,8 @@ MonoBehaviour:
   wallJumpFreezeTime: 0.27
   doTurnOnWallJump: 0
   isWallJumping: 0
-  slideSpeed: 1.27
-  slideAccel: 0.8
+  slideSpeed: 5
+  slideAccel: 0
   coyoteTime: 0.3
   jumpInputBufferTime: 0.5
   dashAmount: 1

@@ -38,7 +38,7 @@ public class PlayerJump : MonoBehaviour
 
     private void Update()
     {
-        WallSlide();
+        StartWallSliding();
         JumpChecks();
 
     }
@@ -47,6 +47,10 @@ public class PlayerJump : MonoBehaviour
     {
         ResetTimersAndJumps();
         GravityChecks();
+        if (isWallSliding)
+        {
+            Slide();
+        }
     }
 
     #region JUMP
@@ -145,7 +149,7 @@ public class PlayerJump : MonoBehaviour
     {
         if (!Data.isDashing)
         {
-            if (isWallSliding)
+            if (isWallSliding && rigidbody.velocity.y < 0)
             {
                 SetGravityScale(0);
             }
@@ -177,20 +181,50 @@ public class PlayerJump : MonoBehaviour
     #endregion
 
     #region WALL INTERACTIONS (JUMP & SLIDE)
-    private void WallSlide()
+
+    public bool CanSlide()
     {
-        if (IsWalled() && !IsGrounded() && playerMovement.horizontal != 0f)
+        if (IsWalled() && !Data.isJumping && !Data.isWallJumping && !Data.isDashing && !IsGrounded())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void StartWallSliding()
+    {
+        if (CanSlide() && (playerMovement.horizontal != 0f))
         {
             isWallSliding = true;
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -Data.slideSpeed, float.MaxValue));
         }
         else
         {
             isWallSliding = false;
         }
-
-
     }
+
+    private void Slide()
+    {
+        if (!IsWalledFromFront())
+        {
+            playerFlip.setIsFacingRight(!playerFlip.GetIsFacingRight());
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
+        }
+
+        float speedDif = Data.slideSpeed - rigidbody.velocity.y;
+        float movement = speedDif * Data.slideAccel;
+        //So, we clamp the movement here to prevent any over corrections (these aren't noticeable in the Run)
+        //The force applied can't be greater than the (negative) speedDifference * by how many times a second FixedUpdate() is called. For more info research how force are applied to rigidbodies.
+        movement = Mathf.Clamp(movement, -Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime), Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime));
+
+        rigidbody.AddForce(movement * Vector2.up);
+    }
+
     private void WallJump()
     {
         if (isWallSliding)
@@ -205,7 +239,8 @@ public class PlayerJump : MonoBehaviour
             wallJumpingCounter -= Time.deltaTime;
         }
 
-        if (jump.action.WasPressedThisFrame() && wallJumpingCounter > 0f)
+
+        if (jump.action.WasPerformedThisFrame() && wallJumpingCounter > 0f)
         {
             Data.isWallJumping = true;
             rigidbody.velocity = new Vector2(wallJumpingDirection * Data.wallJumpForce.x, Data.wallJumpForce.y);
@@ -219,8 +254,12 @@ public class PlayerJump : MonoBehaviour
                 transform.localScale = localScale;
             }
             Invoke(nameof(StopWallJumping), Data.wallJumpRunLerp);
+
+            // Allow double jump after wall jump
+            canDoubleJump = true;
         }
     }
+
     private void StopWallJumping()
     {
         Data.isWallJumping = false;
@@ -237,6 +276,11 @@ public class PlayerJump : MonoBehaviour
     private bool IsWalled()
     {
         return playerEnvironment.IsWalled();
+    }
+
+    private bool IsWalledFromFront()
+    {
+        return playerEnvironment.IsWalledFromFront();
     }
 
     private void ResetTimersAndJumps()
