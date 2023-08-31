@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -44,9 +45,12 @@ TagManager:
   - name: UI
     uniqueID: 584622179
     locked: 0
-  - name: Floor
-    uniqueID: 150833747
-    locked: 0
   - name: Player
     uniqueID: 3243959819
+    locked: 0
+  - name: Background
+    uniqueID: 150833747
+    locked: 0
+  - name: Foreground
+    uniqueID: 3928921179
     locked: 0

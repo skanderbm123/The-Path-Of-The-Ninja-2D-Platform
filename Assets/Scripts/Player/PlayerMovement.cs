@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -70,10 +69,10 @@ public class PlayerMovement : MonoBehaviour
                 Run(1);
             }
         }
-       /* else if (_isDashAttacking)
-        {
-            Run(Data.dashEndRunLerp);
-        }*/
+        /* else if (_isDashAttacking)
+         {
+             Run(Data.dashEndRunLerp);
+         }*/
     }
 
     #region RUN
@@ -90,9 +89,9 @@ public class PlayerMovement : MonoBehaviour
 
         #region Calculate AccelRate
         float accelRate;
-        if (playerEnvironment.IsGrounded()) 
+        if (playerEnvironment.IsGrounded())
             accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
-        else 
+        else
             accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount * Data.accelInAir : Data.runDeccelAmount * Data.deccelInAir;
         #endregion
 
@@ -105,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region Conserve Momentum
-        if (Data.doConserveMomentum && Mathf.Abs(rigidbody.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigidbody.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f ) // && LastOnGroundTime < 0)
+        if (Data.doConserveMomentum && Mathf.Abs(rigidbody.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rigidbody.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f) // && LastOnGroundTime < 0)
         {
             accelRate = 0;
         }

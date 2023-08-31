@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityStrength: -81.835945
   gravityScale: 2.7278647
-  fallGravityMult: 0.98
-  maxFallSpeed: 25
+  fallGravityMult: 1.5
+  maxFallSpeed: 30
   fastFallGravityMult: 2
   maxFastFallSpeed: 30
   runMaxSpeed: 16.7
@@ -41,8 +41,8 @@ MonoBehaviour:
   wallJumpFreezeTime: 0.27
   doTurnOnWallJump: 0
   isWallJumping: 0
-  slideSpeed: 5
-  slideAccel: 0
+  slideSpeed: -7
+  slideAccel: 3
   coyoteTime: 0.3
   jumpInputBufferTime: 0.206
   dashAmount: 1
