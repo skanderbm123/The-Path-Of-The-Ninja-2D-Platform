@@ -40,17 +40,16 @@ public class PlayerJump : MonoBehaviour
     {
         StartWallSliding();
         JumpChecks();
-
+        if (isWallSliding)
+        {
+            Slide();
+        }
     }
 
     private void FixedUpdate()
     {
         ResetTimersAndJumps();
         GravityChecks();
-        if (isWallSliding)
-        {
-            Slide();
-        }
     }
 
     #region JUMP
@@ -90,6 +89,15 @@ public class PlayerJump : MonoBehaviour
 
     private void JumpChecks()
     {
+        if (rigidbody.velocity.y < 0f && !IsGrounded())
+        {
+            Data.isJumpFalling = true;
+        }
+        else
+        {
+            Data.isJumpFalling = false;
+        }
+
         if (Data.isJumping && rigidbody.velocity.y < 0)
         {
             Data.isJumping = false;
@@ -206,7 +214,7 @@ public class PlayerJump : MonoBehaviour
 
     public bool CanSlide()
     {
-        if (IsWalled() && !Data.isJumping && !Data.isWallJumping && !Data.isDashing && !IsGrounded())
+        if (IsWalled() && (rigidbody.velocity.y < 0f) && !Data.isDashing && !IsGrounded())
         {
             return true;
         }
