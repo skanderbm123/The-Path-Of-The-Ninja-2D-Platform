@@ -58,7 +58,16 @@ public class PlayerJump : MonoBehaviour
     {
         if (!isWallSliding)
         {
-            if (Data.isJumping)
+            if (!jump.action.IsPressed()) // Jump cut during jump buffer, didn't find a better way for now :(
+            {
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, Data.jumpHeight);
+                float force = Data.jumpForce;
+                if (rigidbody.velocity.y < 0)
+                    force -= rigidbody.velocity.y;
+
+                rigidbody.AddForce(Vector2.up * force / 2, ForceMode2D.Impulse);
+            }
+            else if (Data.isJumping)
             {
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, Data.jumpHeight);
 
@@ -68,6 +77,14 @@ public class PlayerJump : MonoBehaviour
 
                 rigidbody.AddForce(Vector2.up * force, ForceMode2D.Impulse);
             }
+        }
+    }
+
+    private void JumpCut()
+    {
+        if (rigidbody.velocity.y > 0f)
+        {
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
         }
     }
 
@@ -89,7 +106,6 @@ public class PlayerJump : MonoBehaviour
         if (!IsGrounded() && !Data.isJumping && !Data.isWallJumping)
         {
             isJumpCut = false;
-
             if (!Data.isJumping)
                 Data.isJumpFalling = false;
         }
@@ -110,10 +126,7 @@ public class PlayerJump : MonoBehaviour
             Data.isJumping = true;
             Data.isWallJumping = false;
             Data.isJumpFalling = false;
-            if (isJumpCut)
-                JumpCut();
-            else
-                Jump();
+            Jump();
 
             // Reset double jump after a regular jump
             canDoubleJump = true;
@@ -124,9 +137,7 @@ public class PlayerJump : MonoBehaviour
             {
                 Data.isJumping = true;
                 Data.isWallJumping = false;
-                isJumpCut = false;
                 Data.isJumpFalling = false;
-
                 if (!IsGrounded() && canDoubleJump && coyoteTimeCounter < 0f)
                 {
                     canDoubleJump = false;
@@ -153,14 +164,6 @@ public class PlayerJump : MonoBehaviour
             isJumpCut = true;
             Data.isJumpFalling = false;
             JumpCut();
-        }
-    }
-
-    private void JumpCut()
-    {
-        if (rigidbody.velocity.y > 0f)
-        {
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y * 0.5f);
         }
     }
 
@@ -304,11 +307,16 @@ public class PlayerJump : MonoBehaviour
 
     private void ResetTimersAndJumps()
     {
+
+        if (IsGrounded() && jumpBufferCounter < 0f)
+        {
+            isJumpCut = false;
+        }
+
         if (IsGrounded())
         {
             Data.isJumping = false;
             Data.isWallJumping = false;
-            isJumpCut = false;
             isWallSliding = false;
             coyoteTimeCounter = Data.coyoteTime;
 
