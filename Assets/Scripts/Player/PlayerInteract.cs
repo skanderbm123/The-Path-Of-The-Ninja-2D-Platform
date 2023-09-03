@@ -11,36 +11,40 @@ public class PlayerInteract : MonoBehaviour
 
     private GameObject currentTeleporter;
     private bool isInteracting = false;
-    private float cooldownTimer = 0f;
-    [SerializeField] private float cooldownDuration = 1f; // Adjust this to set the cooldown duration in seconds.
+    private float cooldownPortalTimer = 0f;
+    [SerializeField] private float cooldownPortalDuration = 1f; // Adjust this to set the cooldown duration in seconds.
 
     void Update()
     {
-        if (cooldownTimer > 0)
+        if (cooldownPortalTimer > 0f)
         {
-            cooldownTimer -= Time.deltaTime;
-        }
-
-        if (interact.action.triggered && !isInteracting && cooldownTimer <= 0f)
-        {
-            if (currentTeleporter != null)
-            {
-                transform.position = currentTeleporter.GetComponent<Portal>().GetDestination().position;
-                isInteracting = true;
-                cooldownTimer = cooldownDuration; // Start the cooldown timer.
-            }
-        }
-        else if (!interact.action.triggered)
-        {
-            isInteracting = false;
+            cooldownPortalTimer -= Time.deltaTime;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
         if (collision.CompareTag("Portal"))
         {
             currentTeleporter = collision.gameObject;
+            if (interact.action.triggered && !isInteracting && cooldownPortalTimer <= 0f)
+            {
+                if (currentTeleporter != null)
+                {
+                    transform.position = currentTeleporter.GetComponent<Portal>().GetDestination().position;
+                    isInteracting = true;
+                    cooldownPortalTimer = cooldownPortalDuration; // Start the cooldown timer.
+                }
+            }
+            else if (!interact.action.triggered)
+            {
+                isInteracting = false;
+            }
         }
     }
 

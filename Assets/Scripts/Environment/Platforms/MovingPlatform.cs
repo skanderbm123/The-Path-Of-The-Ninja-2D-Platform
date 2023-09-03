@@ -8,7 +8,7 @@ public class MovingPlatform : MonoBehaviour
     private int currentWaypoint = 0;
     private int direction = 1;     // Direction of movement, 1 for forward, -1 for backward.
     private bool playerOnPlatform = false; // Flag to track if the player is on the platform.
-    private Rigidbody2D rigidbody;
+    private new Rigidbody2D rigidbody;
     private float lerpStartTime;
     private Vector2 startPosition;
     private Vector2 targetPosition;
