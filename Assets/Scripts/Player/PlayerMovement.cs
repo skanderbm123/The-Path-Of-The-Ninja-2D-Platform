@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,6 +28,17 @@ public class PlayerMovement : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerFlip = GetComponent<PlayerFlip>();
         playerEnvironment = GetComponent<PlayerEnvironment>();
+
+        Respawned();
+    }
+
+    private void Respawned()
+    {
+        Data.isDashing = false;
+        Data.isJumping = false;
+        Data.isWallJumping = false;
+        Data.isJumpFalling = false;
+        Data.canDash = true;
     }
 
     private void Update()
@@ -41,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (playerFlip.GetIsFacingRight())
             {
-                GetComponent<SpriteRenderer>().color = Color.red;
+                GetComponent<SpriteRenderer>().color = Color.yellow;
             }
             else
             {

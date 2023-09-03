@@ -10,17 +10,17 @@ public class GameOverManager : MonoBehaviour
     {
         // Get the last checkpoint's transform from the CheckpointManager
         Transform lastCheckpoint = CheckpointManager.Instance.GetLastCheckpointTransform();
-        PlayerHealth playerHealth = PlayerHealth.Instance;
+        Transform defaultCheckpoint = CheckpointManager.Instance.GetDefaultCheckpointTransform();
+
         if (lastCheckpoint != null)
         {
             // Move the player to the last checkpoint's position
             PlayerRespawn.Instance.Respawn(lastCheckpoint.position);
-            playerHealth.Heal(playerHealth.maxHealth);
         }
         else
         {
             // If there's no last checkpoint, reload the default checkpoint
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            PlayerRespawn.Instance.Respawn(defaultCheckpoint.position);
         }
     }
 }

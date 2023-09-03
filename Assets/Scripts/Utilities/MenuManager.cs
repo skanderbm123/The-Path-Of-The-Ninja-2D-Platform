@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour
         // Initialize menus.
         hud.SetActive(true);
         gameOverMenu.SetActive(false);
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
     }
 
     public void ShowGameOverMenu()

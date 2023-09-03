@@ -30,6 +30,9 @@ public class PlayerRespawn : MonoBehaviour
 
     public void Respawn(Vector3 position)
     {
+        PlayerHealth playerHealth = PlayerHealth.Instance;
+        playerHealth.RestoreFullHeal();
+        this.gameObject.SetActive(true);
         transform.position = position; // Use the provided respawn position
         // You might want to reset other player states or behaviors here
     }

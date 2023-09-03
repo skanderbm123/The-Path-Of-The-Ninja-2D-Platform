@@ -58,7 +58,6 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.1f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Utilities\MenuManager.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\Scripts\Utilities\CheckPoint.cs" />
@@ -82,6 +81,7 @@
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\UI\Menus\Options.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
+    <Compile Include="Assets\Scripts\Environment\Traps\Saw.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraFollow.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
@@ -121,6 +121,7 @@
     <Compile Include="Assets\Scripts\UI\Sounds\VolumeOptions.cs" />
     <Compile Include="Assets\Scripts\Utilities\CheckpointManager.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\Scripts\Utilities\MenuManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Fonts\TextMesh Pro\Shaders\TMPro.cginc" />
