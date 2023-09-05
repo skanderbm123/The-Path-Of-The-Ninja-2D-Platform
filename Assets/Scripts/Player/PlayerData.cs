@@ -1,8 +1,11 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Player Data")]
 public class PlayerData : ScriptableObject
 {
+    private static PlayerData _instance;
+
     [Header("Gravity")]
     [HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
     [HideInInspector] public float gravityScale; //Strength of the player's gravity as a multiplier of gravity (set in ProjectSettings/Physics2D).
@@ -53,6 +56,7 @@ public class PlayerData : ScriptableObject
     [Range(0f, 1.5f)] public float wallJumpFreezeTime; //Time after wall jumping the player's movement is slowed for.
     public bool doTurnOnWallJump; //Player will rotate to face wall jumping direction
     [HideInInspector] public bool isWallJumping;
+    [HideInInspector] public bool isWallSliding;
 
     [Space(20)]
 
@@ -83,10 +87,41 @@ public class PlayerData : ScriptableObject
     [Space(5)]
     [Range(0.01f, 0.5f)] public float dashInputBufferTime;
 
+    [Header("Other")]
+
+    [HideInInspector] public bool isKnockbackActive;
+    [HideInInspector] public bool isInvulnerable;
+
+    public static PlayerData Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                // If the instance is null, try to find it in the project assets.
+                _instance = Resources.Load<PlayerData>("PlayerData");
+
+                // If it's still null, create a new instance (this should only happen in the editor).
+                if (_instance == null)
+                {
+                    _instance = CreateInstance<PlayerData>();
+                }
+            }
+
+            return _instance;
+        }
+    }
+
+
 
     //Unity Callback, called when the inspector updates
     private void OnValidate()
     {
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+
         //Calculate gravity strength using the formula (gravity = 2 * jumpHeight / timeToJumpApex^2) 
         gravityStrength = -(2 * jumpHeight) / (jumpTimeToApex * jumpTimeToApex);
 
@@ -99,10 +134,13 @@ public class PlayerData : ScriptableObject
 
         //Calculate jumpForce using the formula (initialJumpVelocity = gravity * timeToJumpApex)
         jumpForce = Mathf.Abs(gravityStrength) * jumpTimeToApex;
-        
+
         #region Variable Ranges
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
         runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
         #endregion
+
+        isKnockbackActive = false;
+        isInvulnerable = false;
     }
 }

@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 1602588590416607348}
   - component: {fileID: 5856402434267168742}
   - component: {fileID: 4864068459579654178}
+  - component: {fileID: 8365076925069873173}
   m_Layer: 8
   m_Name: Platform
   m_TagString: Untagged
@@ -236,7 +237,20 @@ MonoBehaviour:
   waypoints:
   - {fileID: 4403200678300136652}
   - {fileID: 3432239378074849328}
-  speed: 2
+  speed: 10
+  lerpTime: 2
+--- !u!114 &8365076925069873173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5689561263812016587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7fa3c2e4c1b1f54998178db37ec0576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9035943328723644025
 GameObject:
   m_ObjectHideFlags: 0

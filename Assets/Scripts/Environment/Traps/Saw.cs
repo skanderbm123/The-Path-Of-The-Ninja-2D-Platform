@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Saw : MonoBehaviour
 {
@@ -25,23 +26,23 @@ public class Saw : MonoBehaviour
         }
 
     }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             // Assuming the player has a health component, you can damage the player here.
-            PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
-            if (playerHealth != null && !playerHealth.isInvulnerable)
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+            if (playerHealth != null && !playerHealth.Data.isInvulnerable)
             {
-                playerHealth.TakeDamage(damageAmount); // Adjust 'damageAmount' as needed.
-
                 // Apply knockback to the player.
-                Rigidbody2D playerRigidbody = collision.GetComponent<Rigidbody2D>();
+                Vector2 knockbackDirection = (collision.gameObject.transform.position - transform.position).normalized;
+                // Apply the modified knockback force.
+                Rigidbody2D playerRigidbody = collision.gameObject.GetComponent<Rigidbody2D>();
                 if (playerRigidbody != null)
                 {
-                    // Calculate the direction away from the saw and apply force.
-                    Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
                     playerRigidbody.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+                    playerHealth.TakeDamage(damageAmount); // Adjust 'damageAmount' as needed.
                 }
             }
         }

@@ -1,9 +1,13 @@
-using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
     public Health healthBar;
+    public PlayerData Data;
+    private new Rigidbody2D rigidbody;
+
     public int maxHealth = 100;
     [Range(0, 100)] private int currentHealth;
 
@@ -12,8 +16,10 @@ public class PlayerHealth : MonoBehaviour
     [Header("iFrames")]
     [SerializeField] private float iFramesDuration;
     [SerializeField] private int numberOfFlashes;
+    [SerializeField] private Behaviour[] components;
+
     private SpriteRenderer spriteRend;
-    public bool isInvulnerable = false; // Track if the player is invulnerable.
+    public bool isSlowMo = false; // Track if the slow motion is done.
 
     // Singleton instance reference.
     public static PlayerHealth Instance { get; private set; }
@@ -28,6 +34,8 @@ public class PlayerHealth : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -56,49 +64,79 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth -= damage;
         healthBar.SetHealth(currentHealth);
-
-        Debug.Log("here");
         if (currentHealth > 0)
         {
             StartCoroutine(Invulnerability());
+            StartCoroutine(DamageSequence(0.07f, 0f));
         }
         else
         {
-            // Check if the entity is dead.
-            if (currentHealth <= 0)
-            {
-                Die();
-            }
+            rigidbody.velocity = Vector3.zero;
+            StartCoroutine(DamageSequence(2f, 0.3f));
         }
     }
 
     private IEnumerator Invulnerability()
     {
-        isInvulnerable = true; // Set the player as invulnerable during this time.
-        Physics2D.IgnoreLayerCollision(10, 11, true);
-
+        Data.isInvulnerable = true; // Set the player as invulnerable during this time.
         for (int i = 0; i < numberOfFlashes; i++)
         {
-            spriteRend.color = new Color(1, 0, 0, 0.5f);
-            yield return new WaitForSeconds(iFramesDuration / (numberOfFlashes * 2));
+            spriteRend.color = Color.blue;
+            yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
             spriteRend.color = Color.white;
-            yield return new WaitForSeconds(iFramesDuration / (numberOfFlashes * 2));
+            yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
         }
 
-        Physics2D.IgnoreLayerCollision(10, 11, false);
-        isInvulnerable = false; // Reset invulnerability when the time is up.
+        Data.isInvulnerable = false; // Reset invulnerability when the time is up.
     }
 
-    // Custom method for handling death (e.g., play death animation, disable GameObject, etc.).
+    private IEnumerator DamageSequence(float duration, float timeScale)
+    {
+        if (isSlowMo)
+            yield break; // Exit if already in slow motion.
+
+        Time.timeScale = timeScale;
+        isSlowMo = true;
+
+        yield return new WaitForSecondsRealtime(duration);
+
+        Time.timeScale = 1.0f;
+        isSlowMo = false;
+
+        // Check if the entity is dead.
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
     private void Die()
     {
         // Implement death behavior here.
         Debug.Log(gameObject.name + " has died.");
         // Die animation
-        this.gameObject.SetActive(false);
+        foreach (Behaviour component in components)
+            component.enabled = false;
+        gameObject.SetActive(false);
         MenuManager.Instance.ShowGameOverMenu();
+    }
 
-        // Example: gameObject.SetActive(false);
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Trap") && !Data.isInvulnerable)
+        {
+            // Trigger the knockback effect.
+            Data.isKnockbackActive = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Trap"))
+        {
+            // End the knockback state when exiting the hazard zone.
+            Data.isKnockbackActive = false;
+        }
     }
 
     // Additional player-specific health-related methods can be added as needed.

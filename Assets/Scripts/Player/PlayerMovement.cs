@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,23 +23,13 @@ public class PlayerMovement : MonoBehaviour
     public float horizontal { get; set; }
     public float vertical { get; set; }
 
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
         playerJump = GetComponent<PlayerJump>();
         playerFlip = GetComponent<PlayerFlip>();
         playerEnvironment = GetComponent<PlayerEnvironment>();
-
-        Respawned();
-    }
-
-    private void Respawned()
-    {
-        Data.isDashing = false;
-        Data.isJumping = false;
-        Data.isWallJumping = false;
-        Data.isJumpFalling = false;
-        Data.canDash = true;
     }
 
     private void Update()
@@ -51,14 +42,14 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (playerFlip.GetIsFacingRight())
+            /*if (playerFlip.GetIsFacingRight())
             {
                 GetComponent<SpriteRenderer>().color = Color.yellow;
             }
             else
             {
                 GetComponent<SpriteRenderer>().color = Color.green;
-            }
+            }*/
         }
     }
 
@@ -76,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!Data.isDashing)
         {
-            if (!Data.isWallJumping)
+            if (!Data.isWallJumping && !Data.isKnockbackActive)
             {
                 Run(1);
             }
@@ -159,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = new Vector2(horizontal, vertical);
             Vector2 dirDash;
             if (moveInput != Vector2.zero)
-                dirDash = moveInput;
+                dirDash = moveInput.normalized; // Normalize the input for consistent force.
             else
                 dirDash = playerFlip.GetIsFacingRight() ? Vector2.right : Vector2.left;
 
@@ -175,21 +166,23 @@ public class PlayerMovement : MonoBehaviour
         SetGravityScale(0);
         float startTime = Time.time;
         trail.emitting = true;
+
         while (Time.time - startTime <= Data.dashAttackTime)
         {
-            rigidbody.velocity = dirDash.normalized * Data.dashSpeed;
+            // Apply an instantaneous force to achieve the dash effect.
+            rigidbody.AddForce(dirDash.normalized * Data.dashSpeed, ForceMode2D.Impulse);
             yield return null;
         }
 
         startTime = Time.time;
 
         SetGravityScale(Data.gravityScale);
-        rigidbody.velocity = Data.dashEndSpeed * dirDash.normalized;
 
         while (Time.time - startTime <= Data.dashEndTime)
         {
             yield return null;
         }
+
         trail.emitting = false;
         dashTimeCounter = Data.dashRefillTime;
         Data.isDashing = false;

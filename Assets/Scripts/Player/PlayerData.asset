@@ -24,7 +24,7 @@ MonoBehaviour:
   runDecceleration: 14.1
   runDeccelAmount: 42.21557
   accelInAir: 0.13107271
-  deccelInAir: 0.06905068
+  deccelInAir: 0.134
   doConserveMomentum: 1
   jumpHeight: 4.19
   jumpTimeToApex: 0.32
@@ -45,13 +45,13 @@ MonoBehaviour:
   slideAccel: 3
   coyoteTime: 0.3
   jumpInputBufferTime: 0.206
-  dashAmount: 1
-  dashSpeed: 30
+  dashAmount: 0
+  dashSpeed: 3
   dashSleepTime: 0.05
   canDash: 1
   isDashing: 0
-  dashAttackTime: 0.2
-  dashEndTime: 0.16
+  dashAttackTime: 0.1
+  dashEndTime: 0.05
   dashEndSpeed: {x: 15, y: 15}
   dashEndRunLerp: 0
   dashRefillTime: 0.5

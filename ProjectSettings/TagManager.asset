@@ -7,6 +7,7 @@ TagManager:
   - Checkpoint
   - Portal
   - Collectible
+  - Trap
   layers:
   - Default
   - TransparentFX
