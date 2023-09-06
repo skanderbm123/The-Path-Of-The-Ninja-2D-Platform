@@ -100,6 +100,7 @@
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scripts\Environment\Platforms\MovingPlatform.cs" />
+    <Compile Include="Assets\Scripts\Environment\Traps\LightningPole.cs" />
     <Compile Include="Assets\Fonts\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
     <Compile Include="Assets\Scripts\Utilities\Health.cs" />
     <Compile Include="Assets\Scripts\Environment\Platforms\JumpPad.cs" />
