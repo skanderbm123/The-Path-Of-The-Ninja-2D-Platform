@@ -19,6 +19,7 @@ public class ParallaxBackground : MonoBehaviour
 
     private void Update()
     {
+        cam = FindFirstObjectByType<CinemachineVirtualCamera>();
         float temp = (cam.transform.position.x * (1 - parallaxEffect));
         float distance = (cam.transform.position.x * parallaxEffect);
 

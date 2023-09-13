@@ -57,15 +57,25 @@ public class PlayerJump : MonoBehaviour
         {
             animator.SetBool("isJumping", false);
             animator.SetBool("isJumpFalling", false);
+            animator.SetBool("isWallSliding", false);
+        }
+        else if (Data.isWallSliding)
+        {
+            animator.SetBool("isWallSliding", true);
+            animator.SetBool("isJumpFalling", false);
+            animator.SetBool("isJumping", false);
         }
         else if (Data.isJumpFalling)
         {
             animator.SetBool("isJumping", false);
             animator.SetBool("isJumpFalling", true);
+            animator.SetBool("isWallSliding", false);
         }
         else if (!IsGrounded())
         {
             animator.SetBool("isJumping", true);
+            animator.SetBool("isWallSliding", false);
+            animator.SetBool("isWallSliding", false);
         }
     }
 
@@ -115,11 +125,10 @@ public class PlayerJump : MonoBehaviour
 
     private void JumpChecks()
     {
-
         if (Data.isJumping && rigidbody.velocity.y < 0)
         {
             Data.isJumping = false;
-            if (!Data.isWallJumping)
+            if (!Data.isWallJumping && !Data.isWallSliding)
             {
                 Data.isJumpFalling = true;
             }
@@ -141,7 +150,7 @@ public class PlayerJump : MonoBehaviour
         if (isWallSliding)
         {
             Data.isWallJumping = true;
-            //Data.isJumping = false;
+            Data.isJumping = false;
             isJumpCut = false;
 
             _wallJumpFreezeTime = Time.time;
@@ -254,10 +263,12 @@ public class PlayerJump : MonoBehaviour
         if (CanSlide() && (playerMovement.horizontal != 0f))
         {
             isWallSliding = true;
+            Data.isWallSliding = true;
         }
         else
         {
             isWallSliding = false;
+            Data.isWallSliding = false;
         }
     }
 
