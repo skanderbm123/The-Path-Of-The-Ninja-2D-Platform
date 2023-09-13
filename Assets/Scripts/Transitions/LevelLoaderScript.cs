@@ -11,7 +11,6 @@ public class LevelLoaderScript : MonoBehaviour
     {
         if (Mouse.current.leftButton.isPressed)
         {
-            print("lol");
         }
             //LoadNextLevel();  
     }

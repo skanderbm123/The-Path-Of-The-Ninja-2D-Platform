@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,10 +10,13 @@ public class PlayerMovement : MonoBehaviour
     private PlayerJump playerJump;
     private PlayerEnvironment playerEnvironment;
     private new Rigidbody2D rigidbody;
+    private Animator animator;
     #endregion
 
     #region Timers
     private float dashTimeCounter;
+    private float idleTimer = 0f;
+    private const float idleThreshold = 8f;
     #endregion
 
     [SerializeField] private TrailRenderer trail;
@@ -30,27 +31,13 @@ public class PlayerMovement : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerFlip = GetComponent<PlayerFlip>();
         playerEnvironment = GetComponent<PlayerEnvironment>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         DashChecks();
-
-        if (!Data.canDash)
-        {
-            GetComponent<SpriteRenderer>().color = Color.cyan;
-        }
-        else
-        {
-            /*if (playerFlip.GetIsFacingRight())
-            {
-                GetComponent<SpriteRenderer>().color = Color.yellow;
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().color = Color.green;
-            }*/
-        }
+        RunAnimationStateChecks();
     }
 
     private void FixedUpdate()
@@ -78,6 +65,60 @@ public class PlayerMovement : MonoBehaviour
          }*/
     }
 
+    private void RunAnimationStateChecks()
+    {
+        if (!IsGrounded())
+        {
+            animator.SetBool("isRunning", false);
+            SetAllIdleAnimationsFalse();
+            idleTimer = 0f;
+        }
+        else
+        {
+            // Check if the player is running.
+            if (horizontal != 0)
+            {
+                animator.SetBool("isRunning", true);
+                SetAllIdleAnimationsFalse();
+            }
+            else if (IsGrounded())
+            {
+                // The player is not running and has not moved yet.
+                animator.SetBool("isRunning", false);
+                // Increment the idle timer.
+                idleTimer += Time.deltaTime;
+
+                // Set isIdle1 for the first 4 seconds, then isIdle2 for the next 4 seconds.
+                if (idleTimer < 8f)
+                {
+                    animator.SetBool("isIdle1", true);
+                    animator.SetBool("isIdle2", false);
+                    animator.SetBool("isIdle3", false);
+                }
+                else if (idleTimer < 16f)
+                {
+                    animator.SetBool("isIdle1", false);
+                    animator.SetBool("isIdle2", true);
+                    animator.SetBool("isIdle3", false);
+                }
+                else
+                {
+                    // After 8 seconds, set isIdle3 to true until the player moves.
+                    animator.SetBool("isIdle1", false);
+                    animator.SetBool("isIdle2", false);
+                    animator.SetBool("isIdle3", true);
+                }
+            }
+        }
+    }
+
+    private void SetAllIdleAnimationsFalse()
+    {
+        animator.SetBool("isIdle1", false);
+        animator.SetBool("isIdle2", false);
+        animator.SetBool("isIdle3", false);
+    }
+
     #region RUN
     public void Move(InputAction.CallbackContext context)
     {
@@ -88,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
     private void Run(float lerpAmount)
     {
         float targetSpeed = horizontal * Data.runMaxSpeed;
+
         targetSpeed = Mathf.Lerp(rigidbody.velocity.x, targetSpeed, lerpAmount);
 
         #region Calculate AccelRate
@@ -127,12 +169,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (Data.canDash)
-        {
-            GetComponent<SpriteRenderer>().color = Color.red;
-        }
-
-        if (dashTimeCounter < 0f)
+        if (IsGrounded() || (dashTimeCounter < 0f && IsGrounded()))
         {
             Data.canDash = true;
         }
@@ -166,27 +203,26 @@ public class PlayerMovement : MonoBehaviour
         SetGravityScale(0);
         float startTime = Time.time;
         trail.emitting = true;
-
         while (Time.time - startTime <= Data.dashAttackTime)
         {
-            // Apply an instantaneous force to achieve the dash effect.
-            rigidbody.AddForce(dirDash.normalized * Data.dashSpeed, ForceMode2D.Impulse);
+            rigidbody.velocity = dirDash.normalized * Data.dashSpeed;
             yield return null;
         }
 
         startTime = Time.time;
 
         SetGravityScale(Data.gravityScale);
+        rigidbody.velocity = Data.dashEndSpeed * dirDash.normalized;
 
         while (Time.time - startTime <= Data.dashEndTime)
         {
             yield return null;
         }
-
         trail.emitting = false;
         dashTimeCounter = Data.dashRefillTime;
         Data.isDashing = false;
     }
+
     #endregion
 
     public void SetGravityScale(float scale)

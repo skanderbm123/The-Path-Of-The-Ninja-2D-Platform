@@ -104,7 +104,7 @@ public class PlayerHealth : MonoBehaviour
         isSlowMo = false;
 
         // Check if the entity is dead.
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && !ghostMode)
         {
             Die();
         }

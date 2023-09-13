@@ -7,7 +7,6 @@ public class MenuManager : MonoBehaviour
     public GameObject hud;
     public GameObject gameOverMenu;
     public GameObject pauseMenu;
-
     private void Awake()
     {
         if (Instance == null)
@@ -22,6 +21,8 @@ public class MenuManager : MonoBehaviour
     }
     private void Start()
     {
+        /*  PoolingManager.Instance.InitializePool(coinPrefab, initialCoinPoolSize);
+          PoolingManager.Instance.InitializePool(enemyPrefab, initialEnemyPoolSize);*/
         // Initialize menus.
         hud.SetActive(true);
         gameOverMenu.SetActive(false);

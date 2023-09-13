@@ -12,47 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ced444003970a0f48a59ceb9ff977b69, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  gravityStrength: -81.835945
-  gravityScale: 2.7278647
-  fallGravityMult: 1.5
+  gravityStrength: -45.13889
+  gravityScale: 1.5046296
+  fallGravityMult: 0.9
   maxFallSpeed: 30
   fastFallGravityMult: 2
   maxFastFallSpeed: 30
-  runMaxSpeed: 16.7
-  runAcceleration: 9.6
-  runAccelAmount: 28.742516
-  runDecceleration: 14.1
-  runDeccelAmount: 42.21557
-  accelInAir: 0.13107271
-  deccelInAir: 0.134
+  runMaxSpeed: 5.8
+  runAcceleration: 0.91
+  runAccelAmount: 7.8448277
+  runDecceleration: 1.05
+  runDeccelAmount: 9.0517235
+  accelInAir: 0.22
+  deccelInAir: 0.239
   doConserveMomentum: 1
-  jumpHeight: 4.19
-  jumpTimeToApex: 0.32
+  jumpHeight: 1.3
+  jumpTimeToApex: 0.24
   isJumping: 0
   isJumpFalling: 0
-  jumpForce: 26.187502
-  jumpCutGravityMult: 1.02
-  jumpHangGravityMult: 0.768
-  jumpHangTimeThreshold: 3.4
-  jumpHangAccelerationMult: 1.1
+  jumpForce: 10.833333
+  jumpCutGravityMult: 1.5
+  jumpHangGravityMult: 0.579
+  jumpHangTimeThreshold: 5.48
+  jumpHangAccelerationMult: 1.76
   jumpHangMaxSpeedMult: 1.3
-  wallJumpForce: {x: 15, y: 25}
-  wallJumpRunLerp: 0.648
-  wallJumpFreezeTime: 0.27
+  wallJumpForce: {x: 4, y: 15}
+  wallJumpRunLerp: 0.591
+  wallJumpFreezeTime: 0.462
   doTurnOnWallJump: 0
   isWallJumping: 0
+  isWallSliding: 0
   slideSpeed: -7
   slideAccel: 3
   coyoteTime: 0.3
   jumpInputBufferTime: 0.206
   dashAmount: 0
-  dashSpeed: 3
+  dashSpeed: 20
   dashSleepTime: 0.05
   canDash: 1
   isDashing: 0
   dashAttackTime: 0.1
   dashEndTime: 0.05
-  dashEndSpeed: {x: 15, y: 15}
-  dashEndRunLerp: 0
+  dashEndSpeed: {x: 12, y: 12}
+  dashEndRunLerp: 0.153
   dashRefillTime: 0.5
-  dashInputBufferTime: 0
+  dashInputBufferTime: 0.01
+  isKnockbackActive: 0
+  isInvulnerable: 0

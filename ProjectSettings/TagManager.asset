@@ -8,6 +8,7 @@ TagManager:
   - Portal
   - Collectible
   - Trap
+  - Room
   layers:
   - Default
   - TransparentFX
@@ -49,10 +50,16 @@ TagManager:
     uniqueID: 150833747
     locked: 0
   - name: Foreground
-    uniqueID: 3928921179
+    uniqueID: 638583231
+    locked: 0
+  - name: Platforms
+    uniqueID: 4265670227
     locked: 0
   - name: Player
     uniqueID: 3243959819
+    locked: 0
+  - name: Foreground
+    uniqueID: 3928921179
     locked: 0
   - name: UI
     uniqueID: 584622179
