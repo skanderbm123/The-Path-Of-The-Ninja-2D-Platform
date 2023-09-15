@@ -1,5 +1,30 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1101 &-8997242437615094364
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: isWallSliding
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -7935696065860258512}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0
+  m_TransitionOffset: 0
+  m_ExitTime: 0
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1101 &-8286579545166348959
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -42,6 +67,7 @@ AnimatorState:
   - {fileID: -8286579545166348959}
   - {fileID: 2038667850677838403}
   - {fileID: 4064041858770845888}
+  - {fileID: -8997242437615094364}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -300,43 +326,43 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isJumping
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 1
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isJumpFalling
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 1
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isIdle1
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isIdle2
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isIdle3
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isWallSliding
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -363,6 +389,9 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isJumpFalling
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: isJumping
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7935696065860258512}
@@ -593,6 +622,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: isRunning
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: isWallSliding
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7205607084471280791}
   m_Solo: 0
@@ -705,25 +737,25 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 2580877527787701217}
-    m_Position: {x: 740, y: 60, z: 0}
+    m_Position: {x: 390, y: 220, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6249905009904624947}
-    m_Position: {x: 1130, y: -210, z: 0}
+    m_Position: {x: 990, y: 290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8052580794900865174}
-    m_Position: {x: 1140, y: -500, z: 0}
+    m_Position: {x: 970, y: 70, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3795946038147069419}
-    m_Position: {x: 660, y: -490, z: 0}
+    m_Position: {x: 1010, y: -90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7205607084471280791}
-    m_Position: {x: 320, y: 60, z: 0}
+    m_Position: {x: 390, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3025085285523216108}
-    m_Position: {x: 1100, y: 60, z: 0}
+    m_Position: {x: 390, y: 380, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7935696065860258512}
-    m_Position: {x: 320, y: -490, z: 0}
+    m_Position: {x: 640, y: -270, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 7262380819735439001}
@@ -734,9 +766,9 @@ AnimatorStateMachine:
   - {fileID: 7028446143397726370}
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 340, y: -220, z: 0}
+  m_AnyStatePosition: {x: 310, y: -80, z: 0}
   m_EntryPosition: {x: -140, y: 70, z: 0}
-  m_ExitPosition: {x: 740, y: 190, z: 0}
+  m_ExitPosition: {x: 30, y: -140, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 7205607084471280791}
 --- !u!1109 &7028446143397726370

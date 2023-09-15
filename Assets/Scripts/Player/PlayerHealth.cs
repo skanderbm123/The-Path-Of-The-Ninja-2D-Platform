@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
     public PlayerData Data;
     private new Rigidbody2D rigidbody;
 
-    public int maxHealth = 100;
+    public int maxHealth = 4;
     [Range(0, 100)] private int currentHealth;
 
     [SerializeField] public bool ghostMode;
@@ -62,17 +62,20 @@ public class PlayerHealth : MonoBehaviour
     // Method to deduct health points.
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        healthBar.SetHealth(currentHealth);
-        if (currentHealth > 0)
+        if (!Data.isInvulnerable)
         {
-            StartCoroutine(Invulnerability());
-            StartCoroutine(DamageSequence(0.07f, 0f));
-        }
-        else
-        {
-            rigidbody.velocity = Vector3.zero;
-            StartCoroutine(DamageSequence(2f, 0.3f));
+            currentHealth -= damage;
+            healthBar.SetHealth(currentHealth);
+            if (currentHealth > 0)
+            {
+                StartCoroutine(Invulnerability());
+                StartCoroutine(DamageSequence(0.07f, 0f));
+            }
+            else
+            {
+                rigidbody.velocity = Vector3.zero;
+                StartCoroutine(DamageSequence(2f, 0.3f));
+            }
         }
     }
 
@@ -81,7 +84,7 @@ public class PlayerHealth : MonoBehaviour
         Data.isInvulnerable = true; // Set the player as invulnerable during this time.
         for (int i = 0; i < numberOfFlashes; i++)
         {
-            spriteRend.color = Color.blue;
+            spriteRend.color = Color.red;
             yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
             spriteRend.color = Color.white;
             yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));

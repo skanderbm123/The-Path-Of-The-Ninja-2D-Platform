@@ -55,6 +55,7 @@ public class PlayerJump : MonoBehaviour
     {
         if (IsGrounded())
         {
+
             animator.SetBool("isJumping", false);
             animator.SetBool("isJumpFalling", false);
             animator.SetBool("isWallSliding", false);
@@ -74,8 +75,8 @@ public class PlayerJump : MonoBehaviour
         else if (!IsGrounded())
         {
             animator.SetBool("isJumping", true);
-            animator.SetBool("isWallSliding", false);
-            animator.SetBool("isWallSliding", false);
+            animator.SetBool("isJumpFalling", true);
+
         }
     }
 

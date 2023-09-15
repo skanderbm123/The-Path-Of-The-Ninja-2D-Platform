@@ -54,8 +54,8 @@ MonoBehaviour:
   dashAttackTime: 0.1
   dashEndTime: 0.05
   dashEndSpeed: {x: 12, y: 12}
-  dashEndRunLerp: 0.153
+  dashEndRunLerp: 1
   dashRefillTime: 0.5
-  dashInputBufferTime: 0.01
+  dashInputBufferTime: 0.131
   isKnockbackActive: 0
   isInvulnerable: 0
