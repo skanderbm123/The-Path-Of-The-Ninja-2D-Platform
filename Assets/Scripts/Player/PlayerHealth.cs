@@ -84,6 +84,7 @@ public class PlayerHealth : MonoBehaviour
         Data.isInvulnerable = true; // Set the player as invulnerable during this time.
         for (int i = 0; i < numberOfFlashes; i++)
         {
+
             spriteRend.color = Color.red;
             yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
             spriteRend.color = Color.white;

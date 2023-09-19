@@ -32,7 +32,7 @@ public class CameraSwitcher : MonoBehaviour
         if (other.CompareTag("Player") && !other.isTrigger)
         {
             virtualCamera.SetActive(false);
-            mainVirtualCamera.SetActive(true);
+            //mainVirtualCamera.SetActive(true);
         }
     }
 }
