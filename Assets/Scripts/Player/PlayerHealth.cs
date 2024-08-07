@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -20,6 +19,12 @@ public class PlayerHealth : MonoBehaviour
 
     private SpriteRenderer spriteRend;
     public bool isSlowMo = false; // Track if the slow motion is done.
+    private bool isInputBlocked = false; // Track if player input is blocked.
+
+    // Knockback parameters
+    [Header("Knockback")]
+    [SerializeField] private float knockbackForce = 10f;
+    [SerializeField] private float knockbackDuration = 0.5f;
 
     // Singleton instance reference.
     public static PlayerHealth Instance { get; private set; }
@@ -50,7 +55,6 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth += amount;
         healthBar.SetHealth(amount);
-        // You can add visual feedback or other logic for healing here.
     }
 
     public void RestoreFullHeal()
@@ -60,12 +64,17 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Method to deduct health points.
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 damageSourcePosition)
     {
         if (!Data.isInvulnerable)
         {
             currentHealth -= damage;
             healthBar.SetHealth(currentHealth);
+
+            // Apply knockback based on the damage source position
+            ApplyKnockback(damageSourcePosition);
+            StartCoroutine(BlockPlayerInput(knockbackDuration));
+
             if (currentHealth > 0)
             {
                 StartCoroutine(Invulnerability());
@@ -79,25 +88,42 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    private void ApplyKnockback(Vector2 damageSourcePosition)
+    {
+        // Calculate the direction from the damage source to the player
+        Vector2 knockbackDirection = (rigidbody.position - damageSourcePosition).normalized;
+
+        // Apply the knockback force to the player
+        rigidbody.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator BlockPlayerInput(float duration)
+    {
+        isInputBlocked = true;
+
+        yield return new WaitForSeconds(duration);
+
+        isInputBlocked = false;
+    }
+
     private IEnumerator Invulnerability()
     {
-        Data.isInvulnerable = true; // Set the player as invulnerable during this time.
+        Data.isInvulnerable = true;
         for (int i = 0; i < numberOfFlashes; i++)
         {
-
             spriteRend.color = Color.red;
             yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
             spriteRend.color = Color.white;
             yield return new WaitForSecondsRealtime(iFramesDuration / (numberOfFlashes * 2));
         }
 
-        Data.isInvulnerable = false; // Reset invulnerability when the time is up.
+        Data.isInvulnerable = false;
     }
 
     private IEnumerator DamageSequence(float duration, float timeScale)
     {
         if (isSlowMo)
-            yield break; // Exit if already in slow motion.
+            yield break;
 
         Time.timeScale = timeScale;
         isSlowMo = true;
@@ -107,8 +133,7 @@ public class PlayerHealth : MonoBehaviour
         Time.timeScale = 1.0f;
         isSlowMo = false;
 
-        // Check if the entity is dead.
-        if (currentHealth <= 0 && !ghostMode)
+        if (currentHealth <= 0)
         {
             Die();
         }
@@ -116,32 +141,10 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        // Implement death behavior here.
         Debug.Log(gameObject.name + " has died.");
-        // Die animation
         foreach (Behaviour component in components)
             component.enabled = false;
         gameObject.SetActive(false);
         MenuManager.Instance.ShowGameOverMenu();
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Trap") && !Data.isInvulnerable)
-        {
-            // Trigger the knockback effect.
-            Data.isKnockbackActive = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Trap"))
-        {
-            // End the knockback state when exiting the hazard zone.
-            Data.isKnockbackActive = false;
-        }
-    }
-
-    // Additional player-specific health-related methods can be added as needed.
 }

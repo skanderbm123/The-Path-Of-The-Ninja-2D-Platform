@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!Data.isDashing)
         {
-            if (!Data.isWallJumping && !Data.isKnockbackActive)
+            if (!Data.isWallJumping)
             {
                 Run(1);
             }

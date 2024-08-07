@@ -42,7 +42,7 @@ public class Saw : MonoBehaviour
                 if (playerRigidbody != null)
                 {
                     playerRigidbody.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-                    playerHealth.TakeDamage(damageAmount); // Adjust 'damageAmount' as needed.
+                    playerHealth.TakeDamage(damageAmount, transform.position); // Adjust 'damageAmount' as needed.
                 }
             }
         }

@@ -177,7 +177,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.34607983, y: 0.06631565}
+  m_Size: {x: 0.21, y: 0.06}
   m_EdgeRadius: 0
 --- !u!95 &6902529750530935998
 Animator:
@@ -220,6 +220,7 @@ MonoBehaviour:
   damageAmount: 1
   killBox: {fileID: 278889025721991470}
   hurtBox: {fileID: 5909711389453677722}
+  playerData: {fileID: 11400000, guid: c8c44ca0d320b9b46a74dea02219a0d5, type: 2}
 --- !u!251 &5590598719638794690
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -235,7 +236,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 150
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -302,7 +303,7 @@ Transform:
   - {fileID: 5126175077697970932}
   - {fileID: 3570415323654525635}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6967133716249384294
 GameObject:

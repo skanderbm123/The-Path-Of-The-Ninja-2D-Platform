@@ -36,7 +36,11 @@ public class PlayerInteract : MonoBehaviour
             {
                 if (currentTeleporter != null)
                 {
-                    transform.position = currentTeleporter.GetComponent<Portal>().GetDestination().position;
+                    Vector3 destinationPosition = currentTeleporter.GetComponent<Portal>().GetDestination().position;
+
+                    // Only change the x and y, keep the current z position
+                    transform.position = new Vector3(destinationPosition.x, destinationPosition.y, transform.position.z);
+
                     isInteracting = true;
                     cooldownPortalTimer = cooldownPortalDuration; // Start the cooldown timer.
                 }

@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class PlayerFlip : MonoBehaviour
 {
+    #region COMPONENTS
+    public PlayerData Data;
+    #endregion
+
     private bool isFacingRight = true;
 
     public void Flip(float horizontal)
@@ -9,6 +13,7 @@ public class PlayerFlip : MonoBehaviour
         if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
         {
             isFacingRight = !isFacingRight;
+            Data.isFacingRight = isFacingRight;
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;

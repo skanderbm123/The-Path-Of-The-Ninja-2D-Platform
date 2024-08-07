@@ -89,8 +89,8 @@ public class PlayerData : ScriptableObject
 
     [Header("Other")]
 
-    [HideInInspector] public bool isKnockbackActive;
     [HideInInspector] public bool isInvulnerable;
+    [HideInInspector] public bool isFacingRight;
 
     public static PlayerData Instance
     {
@@ -139,8 +139,6 @@ public class PlayerData : ScriptableObject
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
         runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
         #endregion
-
-        isKnockbackActive = false;
         isInvulnerable = false;
     }
 }

@@ -7,10 +7,8 @@ public class Bub : MonoBehaviour
     public float moveSpeed = 2f;
 
     private Animator animator;
-
     private bool isDead = false;
     private bool isFacingRight = false; // Track the enemy's facing direction
-
     private int currentPatrolPointIndex = 0;
 
     [SerializeField] private int damageAmount = 1; // Damage amount when hitting the player
@@ -66,7 +64,6 @@ public class Bub : MonoBehaviour
         // Check if the collision is with the player
         if (collision.gameObject.CompareTag("Player"))
         {
-
             // Check if the player collided with the "kill box" collider
             if (collision.otherCollider == killBox)
             {
@@ -83,18 +80,18 @@ public class Bub : MonoBehaviour
                     playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
                 }
 
-
                 // Disable the enemy GameObject after a delay (for death animation, etc.)
                 Destroy(gameObject, 0.8f);
             }
             // Check if the player collided with the "hurt box" collider
             else if (collision.otherCollider == hurtBox)
             {
-                // Damage the player
+                // Damage the player and apply knockback
                 PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
                 if (playerHealth != null)
                 {
-                    playerHealth.TakeDamage(damageAmount);
+                    // Pass the position of the enemy as the damage source
+                    playerHealth.TakeDamage(damageAmount, transform.position);
                 }
             }
         }

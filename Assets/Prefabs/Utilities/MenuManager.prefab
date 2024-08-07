@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7294589616887477824
 RectTransform:
   m_ObjectHideFlags: 0
@@ -284,7 +284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &10241606276350518
 RectTransform:
   m_ObjectHideFlags: 0
@@ -377,7 +377,7 @@ Transform:
   - {fileID: 8817614900018291685}
   - {fileID: 8997768887360777235}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9216126217965260198
 MonoBehaviour:
@@ -485,8 +485,8 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -576,7 +576,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a11acc154985d7f46a07aafdd7dc8399, type: 3}
+  m_Sprite: {fileID: -781960817, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -624,7 +624,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -228, y: 159.13193}
+  m_AnchoredPosition: {x: -757, y: 405}
   m_SizeDelta: {x: 41.26111, y: 5.952301}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6662151677186140917
@@ -672,9 +672,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 4
   m_WholeNumbers: 1
-  m_Value: 100
+  m_Value: 4
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -722,6 +722,13 @@ MonoBehaviour:
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   healthFill: {fileID: 8490810482209610112}
+  healthBorder: {fileID: 3220176487524071167}
+  healthImage:
+  - {fileID: -781960817, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
+  - {fileID: -1732327198, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
+  - {fileID: 2064476251, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
+  - {fileID: -981776916, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
+  - {fileID: 293880808, guid: 24c70e78f26c366408cd01f165fbead6, type: 3}
 --- !u!1 &6289524458683186748
 GameObject:
   m_ObjectHideFlags: 0

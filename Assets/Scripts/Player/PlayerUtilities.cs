@@ -21,12 +21,6 @@ public static class PlayerUtilities
             {
                 SetGravityScale(Data.gravityScale * Data.jumpHangGravityMult);
             }
-            else if (Data.isKnockbackActive)
-            {
-                //lower gravity if is getting hit
-                SetGravityScale(0);
-                //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
-            }
             else if (rigidbody.velocity.y < 0)
             {
                 //Higher gravity if falling

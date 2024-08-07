@@ -11,7 +11,7 @@ public class Killzone : MonoBehaviour
 
             if (!collision.gameObject.GetComponent<PlayerHealth>().ghostMode)
             {
-                collision.gameObject.GetComponent<PlayerHealth>().TakeDamage(100);
+                collision.gameObject.GetComponent<PlayerHealth>().TakeDamage(100, Vector2.one);
             }
             else
             {

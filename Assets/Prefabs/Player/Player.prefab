@@ -264,7 +264,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0017130971, y: 0.00000011920929}
+  m_Offset: {x: 0.0027345195, y: 0.00000011920929}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -275,7 +275,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.49356264, y: 0.8407389}
+  m_Size: {x: 0.46284992, y: 0.8407389}
   m_EdgeRadius: 0
 --- !u!96 &6659565721487353475
 TrailRenderer:
@@ -457,6 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79e55678e4253c14982303bedc37ddba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Data: {fileID: 11400000, guid: c8c44ca0d320b9b46a74dea02219a0d5, type: 2}
 --- !u!114 &35765602553153078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,7 +486,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4240443461563172452}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d74f5565477dd74a95c93caf028c609, type: 3}
   m_Name: 
@@ -535,7 +536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 0}
   Data: {fileID: 11400000, guid: c8c44ca0d320b9b46a74dea02219a0d5, type: 2}
-  maxHealth: 1
+  maxHealth: 4
   ghostMode: 1
   iFramesDuration: 2
   numberOfFlashes: 3
@@ -543,6 +544,8 @@ MonoBehaviour:
   - {fileID: 2675225817471938795}
   - {fileID: 1506094291128086824}
   isSlowMo: 0
+  knockbackForce: 12
+  knockbackDuration: 0.9
 --- !u!95 &2427345578860357029
 Animator:
   serializedVersion: 5

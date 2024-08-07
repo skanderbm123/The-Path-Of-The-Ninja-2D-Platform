@@ -10,7 +10,16 @@ public class Spike : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-            playerHealth.TakeDamage(damageAmount);
+            playerHealth.TakeDamage(damageAmount, transform.position);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+            playerHealth.TakeDamage(damageAmount, transform.position);
         }
     }
 }
