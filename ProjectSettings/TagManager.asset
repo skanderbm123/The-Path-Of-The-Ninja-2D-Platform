@@ -9,6 +9,7 @@ TagManager:
   - Collectible
   - Trap
   - Room
+  - Respawnable
   layers:
   - Default
   - TransparentFX

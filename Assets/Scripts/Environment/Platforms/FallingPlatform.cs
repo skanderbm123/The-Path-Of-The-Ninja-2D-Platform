@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-public class FallingPlatform : MonoBehaviour
+public class FallingPlatform : ObjectStateTracker
 {
     public float fallDelay = 0.6f; // Time in seconds to wait before falling
     public float destroyDelay = 3.0f; // Time in seconds to destroy the platform after falling
@@ -9,10 +10,18 @@ public class FallingPlatform : MonoBehaviour
     private bool canFall = false; // Indicates whether the platform can fall
     private Rigidbody2D rb;
 
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+    private bool initialActiveState;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Static; // Initially, the platform is static.
+
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+        initialActiveState = gameObject.activeSelf;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -30,7 +39,7 @@ public class FallingPlatform : MonoBehaviour
             // Allow the platform to pass through the object by disabling its collider
             rb.bodyType = RigidbodyType2D.Dynamic; // Allow the platform to fall.
             GetComponent<Collider2D>().enabled = false;
-            Invoke("DestroyPlatform", 0f);
+            Invoke("DeactivateAfterDelay", 0f);
         }
     }
 
@@ -42,12 +51,37 @@ public class FallingPlatform : MonoBehaviour
             rb.bodyType = RigidbodyType2D.Dynamic; // Allow the platform to fall.
 
             // Destroy the platform after a certain time
-            Destroy(gameObject, destroyDelay);
+            StartCoroutine(DeactivateAfterDelay(destroyDelay));
         }
     }
 
-    private void DestroyPlatform()
+    private IEnumerator DeactivateAfterDelay(float delay)
     {
-        Destroy(gameObject);
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
     }
+
+    public override void ResetToInitialState()
+    {
+        // Reset position, rotation, and active state
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+        gameObject.SetActive(initialActiveState);
+
+        // Reset Rigidbody2D properties
+        rb.bodyType = RigidbodyType2D.Static;  // Reset to initial body type
+        rb.velocity = Vector2.zero;  // Reset any applied velocity
+        rb.angularVelocity = 0f;     // Reset any applied angular velocity
+
+        // Re-enable colliders
+        GetComponent<Collider2D>().enabled = true;
+
+        // Reset custom flags or state variables
+        canFall = false;
+
+        // Optionally, cancel any pending Invokes or Coroutines to prevent unintended behavior
+        CancelInvoke("StartFalling");
+        StopAllCoroutines();
+    }
+
 }

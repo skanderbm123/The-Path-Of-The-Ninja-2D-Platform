@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MenuManager : MonoBehaviour
 {
@@ -7,6 +8,10 @@ public class MenuManager : MonoBehaviour
     public GameObject hud;
     public GameObject gameOverMenu;
     public GameObject pauseMenu;
+    public InputActionReference pauseButton;
+
+    private bool isPaused = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -19,14 +24,36 @@ public class MenuManager : MonoBehaviour
             Destroy(gameObject); // Destroy duplicate instances.
         }
     }
+
     private void Start()
     {
-        /*  PoolingManager.Instance.InitializePool(coinPrefab, initialCoinPoolSize);
-          PoolingManager.Instance.InitializePool(enemyPrefab, initialEnemyPoolSize);*/
         // Initialize menus.
         hud.SetActive(true);
         gameOverMenu.SetActive(false);
-        //pauseMenu.SetActive(false);
+        pauseMenu.SetActive(false);
+
+        // Subscribe to the pause button action
+        pauseButton.action.performed += OnPauseButtonPressed;
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from the pause button action to prevent memory leaks
+        pauseButton.action.performed -= OnPauseButtonPressed;
+    }
+
+    private void OnPauseButtonPressed(InputAction.CallbackContext context)
+    {
+        if (!isPaused)
+        {
+            ShowPauseMenu();
+        }
+        else
+        {
+            ResumeGame();
+        }
+
+        isPaused = !isPaused;
     }
 
     public void ShowGameOverMenu()
@@ -34,6 +61,8 @@ public class MenuManager : MonoBehaviour
         // Display the game over menu.
         hud.SetActive(false);
         gameOverMenu.SetActive(true);
+        Time.timeScale = 0f; // Pause the game.
+
     }
 
     public void ShowPauseMenu()
@@ -56,7 +85,10 @@ public class MenuManager : MonoBehaviour
     {
         // Restart the game from the game over menu.
         hud.SetActive(true);
+        pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
+        Time.timeScale = 1f; // Unpause the game.
+
         // Add logic to reset the game.
     }
 

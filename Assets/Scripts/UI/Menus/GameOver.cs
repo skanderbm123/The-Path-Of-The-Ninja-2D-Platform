@@ -15,16 +15,13 @@ public class GameOverManager : MonoBehaviour
         if (lastCheckpoint != null)
         {
             // Move the player to the last checkpoint's position
-            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
+            LevelManager.Instance.RespawnAll();
             PlayerRespawn.Instance.Respawn(lastCheckpoint.position);
         }
         else
         {
             // If there's no last checkpoint, reload the default checkpoint
-            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            LevelManager.Instance.RespawnAll();
             PlayerRespawn.Instance.Respawn(defaultCheckpoint.position);
         }
     }

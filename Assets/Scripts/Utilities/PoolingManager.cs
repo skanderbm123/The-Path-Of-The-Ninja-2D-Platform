@@ -6,55 +6,66 @@ public class PoolingManager : MonoBehaviour
     // Singleton instance reference.
     public static PoolingManager Instance { get; private set; }
 
-    // Dictionary to store pools of objects by their prefab.
-    private Dictionary<GameObject, List<GameObject>> objectPools = new Dictionary<GameObject, List<GameObject>>();
+    public GameObject prefab;
+    public int poolSize = 20;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private Queue<GameObject> poolQueue;
 
-    // Initialize a pool of objects.
-    public void InitializePool(GameObject prefab, int initialSize)
+    // This dictionary will store initial positions and rotations
+    private Dictionary<GameObject, (Vector3, Quaternion)> initialTransforms;
+
+    public List<GameObject> activeObjects = new List<GameObject>();
+
+    void Start()
     {
-        if (!objectPools.ContainsKey(prefab))
+        poolQueue = new Queue<GameObject>();
+        initialTransforms = new Dictionary<GameObject, (Vector3, Quaternion)>();
+
+        for (int i = 0; i < poolSize; i++)
         {
-            objectPools[prefab] = new List<GameObject>();
-            for (int i = 0; i < initialSize; i++)
-            {
-                GameObject obj = Instantiate(prefab);
-                obj.SetActive(false);
-                objectPools[prefab].Add(obj);
-            }
+            GameObject obj = Instantiate(prefab);
+            obj.SetActive(false);
+            poolQueue.Enqueue(obj);
+
+            // Store the initial transform data
+            initialTransforms[obj] = (obj.transform.position, obj.transform.rotation);
         }
     }
 
-    // Spawn an object from the pool.
-    public GameObject SpawnObject(GameObject prefab, Vector3 position, Quaternion rotation)
+    public GameObject GetFromPool(Vector3? position = null, Quaternion? rotation = null)
     {
-        if (objectPools.ContainsKey(prefab))
+        GameObject obj;
+        if (poolQueue.Count > 0)
         {
-            List<GameObject> pool = objectPools[prefab];
-            foreach (GameObject obj in pool)
-            {
-                if (!obj.activeInHierarchy)
-                {
-                    obj.transform.position = position;
-                    obj.transform.rotation = rotation;
-                    obj.SetActive(true);
-                    return obj;
-                }
-            }
+            obj = poolQueue.Dequeue();
+        }
+        else
+        {
+            obj = Instantiate(prefab);
+            initialTransforms[obj] = (obj.transform.position, obj.transform.rotation);
         }
 
-        // If no available object in the pool, create a new one.
-        GameObject newObj = Instantiate(prefab, position, rotation);
-        return newObj;
+        obj.SetActive(true);
+        obj.transform.position = position ?? initialTransforms[obj].Item1;
+        obj.transform.rotation = rotation ?? initialTransforms[obj].Item2;
+        activeObjects.Add(obj);
+        return obj;
     }
 
-    // Despawn an object back to the pool.
-    public void DespawnObject(GameObject obj)
+    public void ReturnToPool(GameObject obj)
     {
         obj.SetActive(false);
+        poolQueue.Enqueue(obj);
+        activeObjects.Remove(obj);
+    }
+
+    public void ResetAllObjects()
+    {
+        foreach (GameObject obj in activeObjects)
+        {
+            obj.SetActive(false);
+            poolQueue.Enqueue(obj);
+        }
+        activeObjects.Clear();
     }
 }

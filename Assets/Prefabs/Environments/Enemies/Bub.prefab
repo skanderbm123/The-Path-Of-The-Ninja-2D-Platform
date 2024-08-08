@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5909711389453677722}
   - component: {fileID: 278889025721991470}
   - component: {fileID: 6902529750530935998}
+  - component: {fileID: 6420140043566075188}
   - component: {fileID: 945463461107479528}
   - component: {fileID: 5590598719638794690}
   m_Layer: 0
@@ -200,6 +201,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6420140043566075188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652292685868252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8256df033f8244abedf11bcb031d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &945463461107479528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,7 +233,6 @@ MonoBehaviour:
   damageAmount: 1
   killBox: {fileID: 278889025721991470}
   hurtBox: {fileID: 5909711389453677722}
-  playerData: {fileID: 11400000, guid: c8c44ca0d320b9b46a74dea02219a0d5, type: 2}
 --- !u!251 &5590598719638794690
 PlatformEffector2D:
   m_ObjectHideFlags: 0

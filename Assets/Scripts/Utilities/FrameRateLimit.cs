@@ -5,8 +5,8 @@ public class FrameRateLimiter : MonoBehaviour
     public enum TargetFrameRateOption
     {
         NoLimit = -1,
-        FPS30 = 30,
-        FPS60 = 60
+        FPS30 = 25,
+        FPS60 = 55
     }
 
     public TargetFrameRateOption targetFrameRateOption = TargetFrameRateOption.FPS60;

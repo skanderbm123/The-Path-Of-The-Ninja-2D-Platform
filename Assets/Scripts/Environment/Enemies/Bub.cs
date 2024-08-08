@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-public class Bub : MonoBehaviour
+public class Bub : ObjectStateTracker
 {
     public float jumpForce = 10f;
     public Transform[] patrolPoints;
@@ -15,9 +16,18 @@ public class Bub : MonoBehaviour
     [SerializeField] private BoxCollider2D killBox;
     [SerializeField] private BoxCollider2D hurtBox;
 
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+    private bool initialActiveState;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
+
+        // Store the initial state of the GameObject
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+        initialActiveState = gameObject.activeSelf;
     }
 
     private void Update()
@@ -80,8 +90,8 @@ public class Bub : MonoBehaviour
                     playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
                 }
 
-                // Disable the enemy GameObject after a delay (for death animation, etc.)
-                Destroy(gameObject, 0.8f);
+                // Deactivate the enemy GameObject after a delay (for death animation, etc.)
+                StartCoroutine(DeactivateAfterDelay(0.8f));
             }
             // Check if the player collided with the "hurt box" collider
             else if (collision.otherCollider == hurtBox)
@@ -106,5 +116,23 @@ public class Bub : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    private IEnumerator DeactivateAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
+    }
+
+    // Method to reset the enemy to its initial state
+    public override void ResetToInitialState()
+    {
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+        isDead = false;
+        animator.SetBool("isHurt", false);
+        animator.SetBool("isDead", false);
+        GetComponent<BoxCollider2D>().enabled = true;
+        gameObject.SetActive(initialActiveState);
     }
 }
